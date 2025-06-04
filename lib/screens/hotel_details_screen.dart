@@ -1,10 +1,9 @@
-// lib/screens/hotel_details/hotel_details_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_hotelbooking_25/db/database_helper.dart';
 
 class HotelDetailsScreen extends StatefulWidget {
-  final int hotelId; // ID của khách sạn sẽ được truyền vào
-  final String hotelName; // Tên khách sạn để hiển thị trên AppBar
+  final int hotelId;
+  final String hotelName;
 
   const HotelDetailsScreen({
     super.key,
@@ -18,247 +17,467 @@ class HotelDetailsScreen extends StatefulWidget {
 
 class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
   bool _isLoading = true;
-  Map<String, dynamic>? _hotelDetails; // Thông tin chi tiết khách sạn
-  List<Map<String, dynamic>> _roomTypes = []; // Danh sách các loại phòng
+  Map<String, dynamic>? _hotelFullDetails;
 
   @override
   void initState() {
     super.initState();
-    _loadHotelData();
+    _loadHotelFullDetails();
   }
 
-  Future<void> _loadHotelData() async {
+  Future<void> _loadHotelFullDetails() async {
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
     });
+
     final dbHelper = DatabaseHelper.instance;
+    try {
+      _hotelFullDetails = await dbHelper.getFullHotelDetails(widget.hotelId);
+      print("HotelDetailsScreen: Loaded hotel details: $_hotelFullDetails");
+    } catch (e) {
+      print('Lỗi khi tải chi tiết khách sạn ID ${widget.hotelId}: $e');
+      _hotelFullDetails = null;
+    }
 
-    // Lấy thông tin chi tiết của khách sạn (bao gồm cả gallery, tiện nghi KS)
-    // Sử dụng hàm getFullHotelDetails bạn đã có hoặc một hàm tương tự
-    // Vì getFullHotelDetails trả về List, ta lấy phần tử đầu tiên
-    // List<Map<String, dynamic>> hotelFullDetailsList = await dbHelper
-    //     .getFullHotelDetails(widget.hotelId);
-    // if (hotelFullDetailsList.isNotEmpty) {
-    //   _hotelDetails = hotelFullDetailsList.first;
-    //   // _roomTypes đã có sẵn trong _hotelDetails['room_types'] từ hàm getFullHotelDetails
-    //   // Nếu getFullHotelDetails chưa trả về room_types như vậy, bạn cần query riêng:
-    //   // _roomTypes = await dbHelper.getLoaiPhongByKhachSan(widget.hotelId);
-    //   if (_hotelDetails!['room_types'] is List) {
-    //     _roomTypes = List<Map<String, dynamic>>.from(
-    //       _hotelDetails!['room_types'],
-    //     );
-    //   }
-    // } else {
-    //   // Xử lý trường hợp không tìm thấy khách sạn
-    //   print("Không tìm thấy khách sạn với ID: ${widget.hotelId}");
-    // }
-
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
   }
 
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Text(
+        title,
+        style: Theme.of(
+          context,
+        ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildImageGallery(
+    List<dynamic>? gallery, {
+    double height = 180,
+    required String placeholderType,
+  }) {
+    if (gallery == null || gallery.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Text('Không có ảnh $placeholderType.'),
+      );
+    }
+    return SizedBox(
+      height: height,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: gallery.length,
+        itemBuilder: (context, index) {
+          final image = gallery[index] as Map<String, dynamic>;
+          return Card(
+            margin: const EdgeInsets.only(right: 10.0),
+            clipBehavior: Clip.antiAlias,
+            child:
+                image['UrlAnh'] != null &&
+                        (image['UrlAnh'] as String).isNotEmpty
+                    ? Image.asset(
+                      image['UrlAnh'],
+                      width: 250,
+                      height: height,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        print(
+                          'Lỗi tải ảnh gallery: ${image['UrlAnh']}: $error',
+                        );
+                        return Container(
+                          width: 250,
+                          height: height,
+                          color: Colors.grey[200],
+                          child: Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              color: Colors.grey[400],
+                              size: 40,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                    : Container(
+                      width: 250,
+                      height: height,
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: Colors.grey[400],
+                          size: 40,
+                        ),
+                      ),
+                    ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAmenitiesList(List<dynamic>? amenities) {
+    if (amenities == null || amenities.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        child: Text('Không có thông tin tiện nghi.'),
+      );
+    }
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 4.0,
+      children:
+          amenities.map<Widget>((amenity) {
+            final amenityMap = amenity as Map<String, dynamic>;
+            return Chip(
+              avatar:
+                  amenityMap['TenIcon'] != null
+                      ? Icon(
+                        _getIconData(amenityMap['TenIcon'] as String),
+                        size: 16,
+                        color: Theme.of(context).primaryColor,
+                      )
+                      : null,
+              label: Text(amenityMap['TenTienNghi'] as String? ?? 'N/A'),
+            );
+          }).toList(),
+    );
+  }
+
+  IconData _getIconData(String iconName) {
+    switch (iconName.toLowerCase()) {
+      case 'wifi':
+        return Icons.wifi;
+      case 'pool':
+        return Icons.pool;
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'local_parking':
+        return Icons.local_parking;
+      case 'fitness_center':
+        return Icons.fitness_center;
+      case 'spa':
+        return Icons.spa;
+      case 'kitchen':
+        return Icons.kitchen;
+      // case 'dryer':
+      //   return Icons.dryer;
+      case 'ac_unit':
+        return Icons.ac_unit;
+      case 'tv':
+        return Icons.tv;
+      default:
+        return Icons.help_outline;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("HotelDetailsScreen: _hotelFullDetails = $_hotelFullDetails");
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.hotelName), // Hiển thị tên khách sạn
+        title: Text(_hotelFullDetails?['TenKhachSan'] ?? widget.hotelName),
       ),
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
-              : _hotelDetails == null
-              ? const Center(child: Text('Không tìm thấy thông tin khách sạn.'))
-              : SingleChildScrollView(
+              : _hotelFullDetails == null
+              ? const Center(child: Text('Không thể tải thông tin khách sạn.'))
+              : ListView(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Hiển thị ảnh chính của khách sạn
-                    if (_hotelDetails!['UrlAnhChinh'] != null)
-                      Image.asset(
-                        _hotelDetails!['UrlAnhChinh'],
+                children: [
+                  // Ảnh chính khách sạn
+                  if (_hotelFullDetails!['UrlAnhChinh'] != null &&
+                      (_hotelFullDetails!['UrlAnhChinh'] as String).isNotEmpty)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12.0),
+                      child: Image.asset(
+                        _hotelFullDetails!['UrlAnhChinh'],
                         width: double.infinity,
                         height: 250,
                         fit: BoxFit.cover,
                         errorBuilder:
-                            (context, error, stackTrace) =>
-                                const Icon(Icons.broken_image, size: 100),
-                      ),
-                    const SizedBox(height: 16),
-                    Text(
-                      _hotelDetails!['TenKhachSan'] ?? 'Tên Khách Sạn',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Địa chỉ: ${_hotelDetails!['DiaChi'] ?? 'N/A'}, ${_hotelDetails!['ThanhPho'] ?? 'N/A'}',
-                    ),
-                    Text(
-                      'Xếp hạng: ${_hotelDetails!['XepHangSao'] ?? 'N/A'} sao',
-                    ),
-                    Text(
-                      'Điện thoại: ${_hotelDetails!['SoDienThoaiKhachSan'] ?? 'N/A'}',
-                    ),
-                    const SizedBox(height: 8),
-                    if (_hotelDetails!['MoTa'] != null)
-                      Text(_hotelDetails!['MoTa']),
-
-                    // --- Hiển thị Gallery ảnh khách sạn ---
-                    if (_hotelDetails!['gallery'] != null &&
-                        (_hotelDetails!['gallery'] as List).isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      Text(
-                        "Thư viện ảnh khách sạn:",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        height: 150,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: (_hotelDetails!['gallery'] as List).length,
-                          itemBuilder: (context, index) {
-                            var image =
-                                (_hotelDetails!['gallery'] as List)[index];
-                            return Card(
-                              child: Image.asset(
-                                image['UrlAnh'],
-                                width: 200,
-                                fit: BoxFit.cover,
-                                errorBuilder:
-                                    (context, error, stackTrace) => const Icon(
-                                      Icons.broken_image,
-                                      size: 50,
-                                    ),
+                            (context, error, stackTrace) => Container(
+                              height: 250,
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: Icon(
+                                  Icons.broken_image,
+                                  size: 100,
+                                  color: Colors.grey,
+                                ),
                               ),
-                            );
-                          },
+                            ),
+                      ),
+                    )
+                  else
+                    Container(
+                      height: 250,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.hotel_rounded,
+                          size: 80,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+
+                  // Tên và thông tin cơ bản
+                  Text(
+                    _hotelFullDetails!['TenKhachSan'] ?? 'Tên Khách Sạn',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          '${_hotelFullDetails!['DiaChi'] ?? 'N/A'}, ${_hotelFullDetails!['ThanhPho'] ?? 'N/A'}',
                         ),
                       ),
                     ],
-
-                    // --- Hiển thị Tiện nghi khách sạn ---
-                    if (_hotelDetails!['amenities'] != null &&
-                        (_hotelDetails!['amenities'] as List).isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      Text(
-                        "Tiện nghi khách sạn:",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 4.0,
-                        children:
-                            (_hotelDetails!['amenities'] as List).map<Widget>((
-                              amenity,
-                            ) {
-                              return Chip(
-                                label: Text(amenity['TenTienNghi'] ?? 'N/A'),
-                              );
-                            }).toList(),
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.phone, size: 16, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(_hotelFullDetails!['SoDienThoaiKhachSan'] ?? 'N/A'),
                     ],
-
-                    const SizedBox(height: 24),
-                    Text(
-                      'Các Loại Phòng Có Sẵn:',
-                      style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  if (_hotelFullDetails!['XepHangSao'] != null)
+                    Row(
+                      children: [
+                        Text(
+                          '${_hotelFullDetails!['XepHangSao']}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.star, color: Colors.amber, size: 18),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    _roomTypes.isEmpty
-                        ? const Text(
-                          'Hiện chưa có thông tin loại phòng cho khách sạn này.',
-                        )
-                        : ListView.builder(
-                          shrinkWrap:
-                              true, // Quan trọng khi ListView trong Column
-                          physics:
-                              const NeverScrollableScrollPhysics(), // Ngăn cuộn lồng nhau
-                          itemCount: _roomTypes.length,
-                          itemBuilder: (context, index) {
-                            final roomType = _roomTypes[index];
-                            return Card(
-                              margin: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: ListTile(
-                                leading:
-                                    roomType['UrlAnhChinh'] != null
-                                        ? Image.asset(
-                                          roomType['UrlAnhChinh'],
-                                          width: 80,
-                                          height: 80,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Icon(
-                                                    Icons.room_preferences,
+                  const SizedBox(height: 12),
+                  if (_hotelFullDetails!['MoTa'] != null &&
+                      (_hotelFullDetails!['MoTa'] as String).isNotEmpty)
+                    Text(
+                      _hotelFullDetails!['MoTa'],
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+
+                  // Thư viện ảnh khách sạn
+                  if (_hotelFullDetails!['gallery'] != null &&
+                      (_hotelFullDetails!['gallery'] as List).isNotEmpty) ...[
+                    _buildSectionTitle(context, 'Thư Viện Ảnh Khách Sạn'),
+                    _buildImageGallery(
+                      _hotelFullDetails!['gallery'] as List<dynamic>?,
+                      placeholderType: 'khách sạn',
+                    ),
+                  ],
+
+                  // Tiện nghi khách sạn
+                  if (_hotelFullDetails!['amenities'] != null &&
+                      (_hotelFullDetails!['amenities'] as List).isNotEmpty) ...[
+                    _buildSectionTitle(context, 'Tiện Nghi Khách Sạn'),
+                    _buildAmenitiesList(
+                      _hotelFullDetails!['amenities'] as List<dynamic>?,
+                    ),
+                  ],
+
+                  // Danh sách loại phòng
+                  _buildSectionTitle(context, 'Các Loại Phòng'),
+                  if (_hotelFullDetails!['room_types'] == null ||
+                      (_hotelFullDetails!['room_types'] as List).isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        'Hiện chưa có thông tin loại phòng cho khách sạn này.',
+                      ),
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount:
+                          (_hotelFullDetails!['room_types'] as List).length,
+                      itemBuilder: (context, index) {
+                        final roomType =
+                            (_hotelFullDetails!['room_types'] as List)[index]
+                                as Map<String, dynamic>;
+                        print(
+                          "HotelDetailsScreen: Hiển thị loại phòng: $roomType",
+                        );
+                        final roomsSpecific =
+                            roomType['rooms_specific'] as List<dynamic>? ?? [];
+                        final availableRooms =
+                            roomsSpecific
+                                .where((room) => room['DangTrong'] == 1)
+                                .toList();
+
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Ảnh loại phòng
+                                if (roomType['UrlAnhChinh'] != null &&
+                                    (roomType['UrlAnhChinh'] as String)
+                                        .isNotEmpty)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.asset(
+                                      roomType['UrlAnhChinh'],
+                                      height: 180,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
+                                                height: 180,
+                                                color: Colors.grey[200],
+                                                child: const Center(
+                                                  child: Icon(
+                                                    Icons.broken_image,
                                                     size: 40,
+                                                    color: Colors.grey,
                                                   ),
-                                        )
-                                        : const Icon(
-                                          Icons.room_preferences,
-                                          size: 40,
-                                        ),
-                                title: Text(
+                                                ),
+                                              ),
+                                    ),
+                                  ),
+                                const SizedBox(height: 12),
+
+                                // Chi tiết loại phòng
+                                Text(
                                   roomType['TenLoaiPhong'] ?? 'N/A',
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 4),
+                                if (roomType['MoTa'] != null &&
+                                    (roomType['MoTa'] as String).isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 4.0,
+                                    ),
+                                    child: Text(
+                                      roomType['MoTa'],
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                Text(
+                                  'Tối đa: ${roomType['SoKhachToiDa'] ?? 'N/A'} khách',
+                                ),
+                                Text(
+                                  'Giá: ${roomType['GiaCoBanMoiDem']?.toStringAsFixed(0) ?? 'N/A'} VND/đêm',
                                   style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green,
+                                  ),
+                                ),
+
+                                // Thư viện ảnh loại phòng
+                                if (roomType['gallery'] != null &&
+                                    (roomType['gallery'] as List)
+                                        .isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Thư viện ảnh loại phòng:',
+                                    style:
+                                        Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                  _buildImageGallery(
+                                    roomType['gallery'] as List<dynamic>?,
+                                    height: 100,
+                                    placeholderType: 'loại phòng',
+                                  ),
+                                ],
+
+                                // Tiện nghi loại phòng
+                                if (roomType['amenities'] != null &&
+                                    (roomType['amenities'] as List)
+                                        .isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Tiện nghi loại phòng:',
+                                    style:
+                                        Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                  _buildAmenitiesList(
+                                    roomType['amenities'] as List<dynamic>?,
+                                  ),
+                                ],
+
+                                // Tình trạng phòng
+                                const SizedBox(height: 12),
+                                Text(
+                                  'Phòng còn trống: ${availableRooms.length}/${roomsSpecific.length}',
+                                  style: TextStyle(
+                                    color:
+                                        availableRooms.isNotEmpty
+                                            ? Colors.green
+                                            : Colors.red,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Tối đa: ${roomType['SoKhachToiDa'] ?? 'N/A'} khách',
-                                    ),
-                                    Text(
-                                      'Giá: ${roomType['GiaCoBanMoiDem']?.toStringAsFixed(0) ?? 'N/A'} VND/đêm',
-                                    ),
-                                    // Hiển thị thêm mô tả ngắn hoặc các tiện nghi chính của loại phòng nếu muốn
-                                    if (roomType['amenities'] != null &&
-                                        (roomType['amenities'] as List)
-                                            .isNotEmpty)
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 4.0,
-                                        ),
-                                        child: Text(
-                                          'Tiện nghi phòng: ${(roomType['amenities'] as List).map((a) => a['TenTienNghi']).join(", ")}',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[700],
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
+                                const SizedBox(height: 8),
+                                availableRooms.isNotEmpty
+                                    ? ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        minimumSize: const Size(
+                                          double.infinity,
+                                          40,
                                         ),
                                       ),
-                                  ],
-                                ),
-                                trailing: ElevatedButton(
-                                  child: const Text('Đặt'),
-                                  onPressed: () {
-                                    // TODO: Điều hướng đến trang đặt phòng chi tiết
-                                    // Truyền IDLoaiPhong, IDKhachSan, và các thông tin cần thiết khác
-                                    print(
-                                      'Đặt phòng: ${roomType['TenLoaiPhong']} của KS ID: ${widget.hotelId}',
-                                    );
-                                    // Navigator.push(context, MaterialPageRoute(builder: (context) => BookingScreen(...)));
-                                  },
-                                ),
-                                onTap: () {
-                                  // TODO: Có thể hiển thị chi tiết hơn về loại phòng này (ví dụ: mở dialog, hoặc trang chi tiết loại phòng)
-                                  print(
-                                    'Xem chi tiết loại phòng: ${roomType['TenLoaiPhong']}',
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                  ],
-                ),
+                                      onPressed: () {
+                                        print(
+                                          'Chọn loại phòng: ${roomType['TenLoaiPhong']} của KS ID: ${widget.hotelId}',
+                                        );
+                                        // TODO: Điều hướng đến trang chọn phòng
+                                      },
+                                      child: const Text('Chọn & Đặt Phòng Này'),
+                                    )
+                                    : const Text(
+                                      'Hết phòng',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                ],
               ),
     );
   }
