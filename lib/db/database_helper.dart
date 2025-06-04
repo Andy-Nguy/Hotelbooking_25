@@ -387,8 +387,14 @@ class DatabaseHelper {
       'UrlAnh': 'assets/image/jw_saigon_phongan1.jpg',
       'ChuThich': 'Khu vực nhà hàng 5 sao',
     });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwSaigonId,
+      'UrlAnh': 'assets/image/jw_saigon_phongan2.jpg',
+      'ChuThich': 'Khu vực nhà hàng 5 sao',
+    });
 
     ///
+
     //Hanoi
     batchAnhKS.insert(tableAnhKhachSan, {
       'IDKhachSan': jwHanoiId,
@@ -396,10 +402,96 @@ class DatabaseHelper {
       'ChuThich': 'Kiến trúc bên ngoài',
     });
     batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_sanh2.jpg',
+      'ChuThich': 'Sảnh chờ sang trọng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_hoboi.jpg',
+      'ChuThich': 'Hồ bơi tầng thượng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_gym.jpg',
+      'ChuThich': 'Phòng tập gym hiện đại',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_phongngu1.jpg',
+      'ChuThich': 'Phòng ngủ sang trọng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_phongngu2.jpg',
+      'ChuThich': 'Phòng ngủ sang trọng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_phongngu3.jpg',
+      'ChuThich': 'Phòng ngủ sang trọng',
+    });
+
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_phongan1.jpg',
+      'ChuThich': 'Nhà hàng sang trọng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_phongan2.jpg',
+      'ChuThich': 'Nhà hàng sang trọng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_phongan3.jpg',
+      'ChuThich': 'Nhà hàng sang trọng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwHanoiId,
+      'UrlAnh': 'assets/image/jw_hanoi_phongan4.jpg',
+      'ChuThich': 'Nhà hàng sang trọng',
+    });
+
+    ///
+    //PhuQuoc
+    batchAnhKS.insert(tableAnhKhachSan, {
       'IDKhachSan': jwPhuQuocId,
       'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
       'ChuThich': 'Bãi biển riêng',
     });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+
+    ///
     try {
       await batchAnhKS.commit(noResult: true);
       print("SQLite: Đã chèn AnhKhachSan.");
