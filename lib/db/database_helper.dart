@@ -590,7 +590,7 @@ class DatabaseHelper {
       'IDKhachSan': jwSaigonId,
       'TenLoaiPhong': 'apartment1',
       'MoTa':
-          'Diện tích 80m²,Căn hộ có 1 phòng ngủ với 1 giường đôi lớn và phòng tắm liền kề, với không gian phòng khách và nhà bếp tách biệt, view thành phố.',
+          'Diện tích 80m²,Căn hộ có 1 phòng ngủ với 1 giường đôi lớn và Phòng liền kề, với không gian phòng khách và nhà bếp tách biệt, view thành phố.',
       'SoKhachToiDa': 4,
       'GiaCoBanMoiDem': 13000.000,
       'UrlAnhChinh': 'assets/image/jw_saigon_executive_canho_main.jpg',
@@ -717,7 +717,7 @@ class DatabaseHelper {
                   rt['IDKhachSan'] == jwSaigonId,
             )['IDLoaiPhong']
             as int;
-    int jwSaigonCanho2eRTId =
+    int jwSaigonCanho2RTId =
         roomTypes.firstWhere(
               (rt) =>
                   rt['TenLoaiPhong'] == 'apartment2' &&
@@ -728,6 +728,34 @@ class DatabaseHelper {
         roomTypes.firstWhere(
               (rt) =>
                   rt['TenLoaiPhong'] == 'Phòng Deluxe Lake View' &&
+                  rt['IDKhachSan'] == jwHanoiId,
+            )['IDLoaiPhong']
+            as int;
+    int jwHanoiExecutiveRTId =
+        roomTypes.firstWhere(
+              (rt) =>
+                  rt['TenLoaiPhong'] == 'Phòng Executive' &&
+                  rt['IDKhachSan'] == jwHanoiId,
+            )['IDLoaiPhong']
+            as int;
+    int jwHanoiDeluxeSuiteRTId =
+        roomTypes.firstWhere(
+              (rt) =>
+                  rt['TenLoaiPhong'] == 'Phòng Deluxe Suite' &&
+                  rt['IDKhachSan'] == jwHanoiId,
+            )['IDLoaiPhong']
+            as int;
+    int jwHanoiGrandSuiteRTId =
+        roomTypes.firstWhere(
+              (rt) =>
+                  rt['TenLoaiPhong'] == 'Phòng Grand Suite' &&
+                  rt['IDKhachSan'] == jwHanoiId,
+            )['IDLoaiPhong']
+            as int;
+    int jwHanoiPresidentialSuiteRTId =
+        roomTypes.firstWhere(
+              (rt) =>
+                  rt['TenLoaiPhong'] == 'Phòng Presidential Suite' &&
                   rt['IDKhachSan'] == jwHanoiId,
             )['IDLoaiPhong']
             as int;
@@ -751,94 +779,211 @@ class DatabaseHelper {
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonDeluxeKingRTId,
       'UrlAnh': 'assets/image/jw_saigon_deluxe_king_gallery2.jpg',
-      'ChuThich': 'Phòng tắm',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonDeluxeKingRTId,
       'UrlAnh': 'assets/image/jw_saigon_deluxe_king_gallery3.jpg',
-      'ChuThich': 'Phòng tắm',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonDeluxeKingRTId,
       'UrlAnh': 'assets/image/jw_saigon_deluxe_king_gallery4.jpg',
-      'ChuThich': 'Phòng tắm',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonDeluxeKingRTId,
       'UrlAnh': 'assets/image/jw_saigon_deluxe_king_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'ChuThich': 'Phòng',
     });
     //
     //phòng executive suite_saigon
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonExecSuiteRTId,
       'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery1.jpg',
-      'ChuThich': 'Phòng tắm',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonExecSuiteRTId,
       'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery2.jpg',
-      'ChuThich': 'Phòng tắm',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonExecSuiteRTId,
       'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery3.jpg',
-      'ChuThich': 'Phòng tắm',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonExecSuiteRTId,
       'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery4.jpg',
-      'ChuThich': 'Phòng tắm',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonExecSuiteRTId,
       'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'ChuThich': 'Phòng',
     });
     //
     //canho gia đình_saigon
     // Căn hộ 1 phòng ngủ
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonCanho1RTId,
-      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'UrlAnh': 'assets/image/jw_saigon_canho1_gallery1.jpg',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonCanho1RTId,
-      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'UrlAnh': 'assets/image/jw_saigon_canho1_gallery2.jpg',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonCanho1RTId,
-      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'UrlAnh': 'assets/image/jw_saigon_canho1_gallery3.jpg',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonCanho1RTId,
-      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'UrlAnh': 'assets/image/jw_saigon_canho1_gallery4.jpg',
+      'ChuThich': 'Phòng',
     });
 
     // Căn hộ 2 phòng ngủ
     batchAnhLP.insert(tableAnhLoaiPhong, {
-      'IDLoaiPhong': jwSaigonCanho1RTId,
-      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'IDLoaiPhong': jwSaigonCanho2RTId,
+      'UrlAnh': 'assets/image/jw_saigon_canho2_gallery1.jpg',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
-      'IDLoaiPhong': jwSaigonCanho1RTId,
-      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'IDLoaiPhong': jwSaigonCanho2RTId,
+      'UrlAnh': 'assets/image/jw_saigon_canho2_gallery2.jpg',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
-      'IDLoaiPhong': jwSaigonCanho1RTId,
-      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'IDLoaiPhong': jwSaigonCanho2RTId,
+      'UrlAnh': 'assets/image/jw_saigon_canho2_gallery3.jpg',
+      'ChuThich': 'Phòng',
     });
     batchAnhLP.insert(tableAnhLoaiPhong, {
-      'IDLoaiPhong': jwSaigonCanho1RTId,
-      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
-      'ChuThich': 'Phòng tắm',
+      'IDLoaiPhong': jwSaigonCanho2RTId,
+      'UrlAnh': 'assets/image/jw_saigon_canho2_gallery4.jpg',
+      'ChuThich': 'Phòng',
+    });
+    //
+    //phòng deluxe lake view_hanoi
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiDeluxeLakeRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_deluxe_lake_gallery1.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiDeluxeLakeRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_deluxe_lake_gallery3.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiDeluxeLakeRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_deluxe_lake_gallery4.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiDeluxeLakeRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_deluxe_lake_gallery2.webp',
+      'ChuThich': 'Phòng',
+    });
+    //phong executive_hanoi
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiExecutiveRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_executive_gallery1.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiExecutiveRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_executive_gallery2.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiExecutiveRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_executive_gallery3.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiExecutiveRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_executive_gallery4.webp',
+      'ChuThich': 'Phòng',
+    });
+    //phong deluxe suite_hanoi
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiDeluxeSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_deluxe_suite_gallery1.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiDeluxeSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_deluxe_suite_gallery2.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiDeluxeSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_deluxe_suite_gallery3.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiDeluxeSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_deluxe_suite_gallery4.webp',
+      'ChuThich': 'Phòng',
+    });
+    //phong grand suite_hanoi
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiGrandSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_grand_suite_gallery1.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiGrandSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_grand_suite_gallery2.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiGrandSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_grand_suite_gallery3.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiGrandSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_grand_suite_gallery4.jpg',
+      'ChuThich': 'Phòng',
+    });
+    //phong presidential suite_hanoi
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiPresidentialSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_presidential_suite_gallery1.jpg',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiPresidentialSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_presidential_suite_gallery2.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiPresidentialSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_presidential_suite_gallery3.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiPresidentialSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_presidential_suite_gallery4.webp',
+      'ChuThich': 'Phòng',
+    });
+
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiPresidentialSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_presidential_suite_gallery5.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwHanoiPresidentialSuiteRTId,
+      'UrlAnh': 'assets/image/jw_hanoi_presidential_suite_gallery6.webp',
+      'ChuThich': 'Phòng',
     });
 
     //
@@ -949,17 +1094,18 @@ class DatabaseHelper {
     });
     batchPhong.insert(tablePhong, {
       'IDKhachSan': jwSaigonId,
-      'IDLoaiPhong': jwSaigonCanho2eRTId,
+      'IDLoaiPhong': jwSaigonCanho2RTId,
       'SoPhong': 'S_C2A401',
       'DangTrong': 1,
     });
     batchPhong.insert(tablePhong, {
       'IDKhachSan': jwSaigonId,
-      'IDLoaiPhong': jwSaigonCanho2eRTId,
+      'IDLoaiPhong': jwSaigonCanho2RTId,
       'SoPhong': 'S_C2A402',
       'DangTrong': 1,
     });
     //
+
     batchPhong.insert(tablePhong, {
       'IDKhachSan': jwHanoiId,
       'IDLoaiPhong': jwHanoiDeluxeLakeRTId,
@@ -972,6 +1118,61 @@ class DatabaseHelper {
       'SoPhong': 'H_DL302',
       'DangTrong': 1,
     });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwHanoiId,
+      'IDLoaiPhong': jwHanoiDeluxeLakeRTId,
+      'SoPhong': 'H_DL303',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwHanoiId,
+      'IDLoaiPhong': jwHanoiExecutiveRTId,
+      'SoPhong': 'H_EX401',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwHanoiId,
+      'IDLoaiPhong': jwHanoiExecutiveRTId,
+      'SoPhong': 'H_EX402',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwHanoiId,
+      'IDLoaiPhong': jwHanoiExecutiveRTId,
+      'SoPhong': 'H_EX403',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwHanoiId,
+      'IDLoaiPhong': jwHanoiDeluxeSuiteRTId,
+      'SoPhong': 'H_DS501',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwHanoiId,
+      'IDLoaiPhong': jwHanoiDeluxeSuiteRTId,
+      'SoPhong': 'H_DS502',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwHanoiId,
+      'IDLoaiPhong': jwHanoiGrandSuiteRTId,
+      'SoPhong': 'H_GS601',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwHanoiId,
+      'IDLoaiPhong': jwHanoiGrandSuiteRTId,
+      'SoPhong': 'H_GS602',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwHanoiId,
+      'IDLoaiPhong': jwHanoiPresidentialSuiteRTId,
+      'SoPhong': 'H_PS701',
+      'DangTrong': 1,
+    });
+    //
     batchPhong.insert(tablePhong, {
       'IDKhachSan': jwPhuQuocId,
       'IDLoaiPhong': jwPhuQuocEmeraldRTId,
