@@ -197,7 +197,7 @@ class DatabaseHelper {
       'SoDienThoaiKhachSan': '+84 28-35209999',
     });
     batchKhachSan.insert(tableKhachSan, {
-      'TenKhachSan': 'JW Marriott Hotel Hanoi',
+      'TenKhachSan': 'Khách sạn JW Marriott Hotel Hanoi & Spa',
       'DiaChi': '8, Đỗ Đức Dục, Mễ Trì, Nam Từ Liêm, Hà Nội',
       'ThanhPho': 'Thành phố Hà Nội',
       'MoTa': 'Bên không gian ven hồ thơ mộng...',
@@ -462,32 +462,57 @@ class DatabaseHelper {
     });
     batchAnhKS.insert(tableAnhKhachSan, {
       'IDKhachSan': jwPhuQuocId,
-      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'UrlAnh': 'assets/image/jw_phuquoc_gallery_2.jpg',
       'ChuThich': 'Bãi biển riêng',
     });
     batchAnhKS.insert(tableAnhKhachSan, {
       'IDKhachSan': jwPhuQuocId,
-      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'UrlAnh': 'assets/image/jw_phuquoc_hoboi1.jpg',
       'ChuThich': 'Bãi biển riêng',
     });
     batchAnhKS.insert(tableAnhKhachSan, {
       'IDKhachSan': jwPhuQuocId,
-      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'UrlAnh': 'assets/image/jw_phuquoc_phongngu1.jpg',
       'ChuThich': 'Bãi biển riêng',
     });
     batchAnhKS.insert(tableAnhKhachSan, {
       'IDKhachSan': jwPhuQuocId,
-      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'UrlAnh': 'assets/image/jw_phuquoc_phongngu2.jpg',
       'ChuThich': 'Bãi biển riêng',
     });
     batchAnhKS.insert(tableAnhKhachSan, {
       'IDKhachSan': jwPhuQuocId,
-      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'UrlAnh': 'assets/image/jw_phuquoc_phongngu4.jpg',
       'ChuThich': 'Bãi biển riêng',
     });
     batchAnhKS.insert(tableAnhKhachSan, {
       'IDKhachSan': jwPhuQuocId,
-      'UrlAnh': 'assets/image/jw_phuquoc_gallery_1.jpg',
+      'UrlAnh': 'assets/image/jw_phuquoc_bien.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_phongan.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_phongan1.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_phongan2.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_hoboi1.jpg',
+      'ChuThich': 'Bãi biển riêng',
+    });
+    batchAnhKS.insert(tableAnhKhachSan, {
+      'IDKhachSan': jwPhuQuocId,
+      'UrlAnh': 'assets/image/jw_phuquoc_phongngu5.jpg',
       'ChuThich': 'Bãi biển riêng',
     });
 
@@ -556,29 +581,109 @@ class DatabaseHelper {
       'IDKhachSan': jwSaigonId,
       'TenLoaiPhong': 'Phòng Executive Suite',
       'MoTa':
-          'Diện tích 80m², phòng khách riêng, truy cập Executive Lounge, view sông.',
-      'SoKhachToiDa': 2,
+          'Diện tích 106m², phòng khách riêng,tiện nghi đầy đủ,hướng thành phố.',
+      'SoKhachToiDa': 3,
       'GiaCoBanMoiDem': 9000000,
-      'UrlAnhChinh': 'assets/image/jw_saigon_executive_suite_main.jpg',
+      'UrlAnhChinh': 'assets/image/jw_saigon_phongngu2.jpg',
     });
+    batchLoaiPhong.insert(tableLoaiPhong, {
+      'IDKhachSan': jwSaigonId,
+      'TenLoaiPhong': 'apartment1',
+      'MoTa':
+          'Diện tích 80m²,Căn hộ có 1 phòng ngủ với 1 giường đôi lớn và phòng tắm liền kề, với không gian phòng khách và nhà bếp tách biệt, view thành phố.',
+      'SoKhachToiDa': 4,
+      'GiaCoBanMoiDem': 13000.000,
+      'UrlAnhChinh': 'assets/image/jw_saigon_executive_canho_main.jpg',
+    });
+    batchLoaiPhong.insert(tableLoaiPhong, {
+      'IDKhachSan': jwSaigonId,
+      'TenLoaiPhong': 'apartment2',
+      'MoTa':
+          'Diện tích 120m²,Căn hộ có 2 phòng ngủ với không gian phòng khách và nhà bếp tách biệt, view thành phố.',
+      'SoKhachToiDa': 4,
+      'GiaCoBanMoiDem': 19000000,
+      'UrlAnhChinh': 'assets/image/jw_saigon_executive_canho_main1.jpg',
+    });
+
+    ///
+    ///
     batchLoaiPhong.insert(tableLoaiPhong, {
       'IDKhachSan': jwHanoiId,
       'TenLoaiPhong': 'Phòng Deluxe Lake View',
       'MoTa':
-          'Diện tích 48m², giường King hoặc 2 giường đơn, tầm nhìn ra hồ Mễ Trì.',
-      'SoKhachToiDa': 2,
-      'GiaCoBanMoiDem': 4800000,
+          'Diện tích 48m², giường đôi hoặc 2 giường đơn, tầm nhìn ra hồ gần Trung tâm Hội nghị Quốc gia.',
+      'SoKhachToiDa': 3,
+      'GiaCoBanMoiDem': 4650000,
       'UrlAnhChinh': 'assets/image/jw_hanoi_deluxe_lake_main.jpg',
     });
+    batchLoaiPhong.insert(tableLoaiPhong, {
+      'IDKhachSan': jwHanoiId,
+      'TenLoaiPhong': 'Phòng Executive',
+      'MoTa':
+          'Diện tích 48m², 1 giường cỡ King, View hướng thành phố, Phòng Khách.',
+      'SoKhachToiDa': 2,
+      'GiaCoBanMoiDem': 5300000,
+      'UrlAnhChinh': 'assets/image/jw_hanoi_executive_main.jpg',
+    });
+    batchLoaiPhong.insert(tableLoaiPhong, {
+      'IDKhachSan': jwHanoiId,
+      'TenLoaiPhong': 'Phòng Deluxe Suite',
+      'MoTa':
+          'Diện tích 48m², 2 giường đôi, Cảnh quan hồ, Quyền sử dụng Executive Lounge, Phòng Khách.',
+      'SoKhachToiDa': 3,
+      'GiaCoBanMoiDem': 5800000,
+      'UrlAnhChinh': 'assets/image/jw_hanoi_deluxe_suite_main.jpg',
+    });
+    batchLoaiPhong.insert(tableLoaiPhong, {
+      'IDKhachSan': jwHanoiId,
+      'TenLoaiPhong': 'Phòng Grand Suite',
+      'MoTa':
+          'Diện tích 68m², 2 giường đôi, Cảnh quan hồ, Quyền sử dụng Executive Lounge, Ban công, Phòng Khách.',
+      'SoKhachToiDa': 4,
+      'GiaCoBanMoiDem': 7800000,
+      'UrlAnhChinh': 'assets/image/jw_hanoi_grand_suite_main.jpg',
+    });
+    batchLoaiPhong.insert(tableLoaiPhong, {
+      'IDKhachSan': jwHanoiId,
+      'TenLoaiPhong': 'Phòng Presidential Suite',
+      'MoTa':
+          'Diện tích 320m²,1 giường cỡ King, Cảnh quan hồ, Toàn cảnh thành phố, Quyền sử dụng Executive Lounge, Góc, Presidential Suite.',
+      'SoKhachToiDa': 3,
+      'GiaCoBanMoiDem': 131800000,
+      'UrlAnhChinh': 'assets/image/jw_hanoi_presidential_suite_main.jpg',
+    });
+
+    ///
+    ///
     batchLoaiPhong.insert(tableLoaiPhong, {
       'IDKhachSan': jwPhuQuocId,
       'TenLoaiPhong': 'Emerald Bay View',
       'MoTa':
-          'Diện tích 53m², ban công riêng nhìn ra Vịnh Ngọc Bích tuyệt đẹp.',
-      'SoKhachToiDa': 2,
+          'Diện tích 53m²,1 giường King ban công riêng nhìn ra Vịnh Ngọc Bích tuyệt đẹp.',
+      'SoKhachToiDa': 3,
       'GiaCoBanMoiDem': 7500000,
-      'UrlAnhChinh': 'assets/image/jw_phuquoc_emerald_bay_view_main.jpg',
+      'UrlAnhChinh': 'assets/image/jw_phuquoc_emerald_bay_view_main.webp',
     });
+    batchLoaiPhong.insert(tableLoaiPhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'TenLoaiPhong': 'Emerald Bay View',
+      'MoTa': 'Diện tích 53m²,2 giường đơn ban công riêng nhìn ra bãi biển.',
+      'SoKhachToiDa': 3,
+      'GiaCoBanMoiDem': 7500000,
+      'UrlAnhChinh': 'assets/image/jw_phuquoc_emerald_bay_view1_main.jpg',
+    });
+    batchLoaiPhong.insert(tableLoaiPhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'TenLoaiPhong': 'Phòng Deluxe Emerald Bay View',
+      'MoTa':
+          'Diện tích 63m², quyền sử dụng mọi tiện nghi,ban công riêng nhìn ra Vịnh Ngọc Bích tuyệt đẹp.',
+      'SoKhachToiDa': 4,
+      'GiaCoBanMoiDem': 12500000,
+      'UrlAnhChinh': 'assets/image/jw_phuquoc_phongngu1.jpg',
+    });
+
+    ///
+    ///
     try {
       await batchLoaiPhong.commit(noResult: true);
       print("SQLite: Đã chèn LoaiPhong.");
@@ -605,6 +710,20 @@ class DatabaseHelper {
                   rt['IDKhachSan'] == jwSaigonId,
             )['IDLoaiPhong']
             as int;
+    int jwSaigonCanho1RTId =
+        roomTypes.firstWhere(
+              (rt) =>
+                  rt['TenLoaiPhong'] == 'apartment1' &&
+                  rt['IDKhachSan'] == jwSaigonId,
+            )['IDLoaiPhong']
+            as int;
+    int jwSaigonCanho2eRTId =
+        roomTypes.firstWhere(
+              (rt) =>
+                  rt['TenLoaiPhong'] == 'apartment2' &&
+                  rt['IDKhachSan'] == jwSaigonId,
+            )['IDLoaiPhong']
+            as int;
     int jwHanoiDeluxeLakeRTId =
         roomTypes.firstWhere(
               (rt) =>
@@ -622,6 +741,8 @@ class DatabaseHelper {
 
     // --- AnhLoaiPhong ---
     Batch batchAnhLP = db.batch();
+    //phòng deluxe king_saigon
+    //
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwSaigonDeluxeKingRTId,
       'UrlAnh': 'assets/image/jw_saigon_deluxe_king_gallery1.jpg',
@@ -632,6 +753,95 @@ class DatabaseHelper {
       'UrlAnh': 'assets/image/jw_saigon_deluxe_king_gallery2.jpg',
       'ChuThich': 'Phòng tắm',
     });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonDeluxeKingRTId,
+      'UrlAnh': 'assets/image/jw_saigon_deluxe_king_gallery3.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonDeluxeKingRTId,
+      'UrlAnh': 'assets/image/jw_saigon_deluxe_king_gallery4.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonDeluxeKingRTId,
+      'UrlAnh': 'assets/image/jw_saigon_deluxe_king_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    //
+    //phòng executive suite_saigon
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonExecSuiteRTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery1.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonExecSuiteRTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery2.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonExecSuiteRTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery3.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonExecSuiteRTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery4.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonExecSuiteRTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    //
+    //canho gia đình_saigon
+    // Căn hộ 1 phòng ngủ
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+
+    // Căn hộ 2 phòng ngủ
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'UrlAnh': 'assets/image/jw_saigon_executive_suite_gallery5.jpg',
+      'ChuThich': 'Phòng tắm',
+    });
+
+    //
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwPhuQuocEmeraldRTId,
       'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view_gallery1.jpg',
@@ -681,6 +891,7 @@ class DatabaseHelper {
 
     // --- Phong ---
     Batch batchPhong = db.batch();
+
     batchPhong.insert(tablePhong, {
       'IDKhachSan': jwSaigonId,
       'IDLoaiPhong': jwSaigonDeluxeKingRTId,
@@ -711,6 +922,44 @@ class DatabaseHelper {
       'SoPhong': 'S_ES202',
       'DangTrong': 1,
     });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwSaigonId,
+      'IDLoaiPhong': jwSaigonExecSuiteRTId,
+      'SoPhong': 'S_ES203',
+      'DangTrong': 1,
+    });
+    //
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwSaigonId,
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'SoPhong': 'S_C1A301',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwSaigonId,
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'SoPhong': 'S_C1A302',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwSaigonId,
+      'IDLoaiPhong': jwSaigonCanho1RTId,
+      'SoPhong': 'S_C1A303',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwSaigonId,
+      'IDLoaiPhong': jwSaigonCanho2eRTId,
+      'SoPhong': 'S_C2A401',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwSaigonId,
+      'IDLoaiPhong': jwSaigonCanho2eRTId,
+      'SoPhong': 'S_C2A402',
+      'DangTrong': 1,
+    });
+    //
     batchPhong.insert(tablePhong, {
       'IDKhachSan': jwHanoiId,
       'IDLoaiPhong': jwHanoiDeluxeLakeRTId,
