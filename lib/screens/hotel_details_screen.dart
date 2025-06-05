@@ -18,6 +18,7 @@ class HotelDetailsScreen extends StatefulWidget {
 class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
   bool _isLoading = true;
   Map<String, dynamic>? _hotelFullDetails;
+  int _currentIndex = 0; // Chỉ số của tab hiện tại
 
   @override
   void initState() {
@@ -167,14 +168,37 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
         return Icons.spa;
       case 'kitchen':
         return Icons.kitchen;
-      // case 'dryer':
-      //   return Icons.dryer;
       case 'ac_unit':
         return Icons.ac_unit;
       case 'tv':
         return Icons.tv;
       default:
         return Icons.help_outline;
+    }
+  }
+
+  void _onNavBarTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    // Điều hướng đến các màn hình tương ứng
+    switch (index) {
+      case 0:
+        // Điều hướng đến Trang chủ
+        print('Điều hướng đến Trang chủ');
+        // Navigator.pushReplacementNamed(context, '/home');
+        break;
+      case 1:
+        // Điều hướng đến Tìm kiếm
+        print('Điều hướng đến Tìm kiếm');
+        // Navigator.pushReplacementNamed(context, '/search');
+        break;
+      case 2:
+        // Điều hướng đến Đặt phòng
+        print('Điều hướng đến Đặt phòng');
+        // Navigator.pushReplacementNamed(context, '/bookings');
+        break;
     }
   }
 
@@ -479,6 +503,21 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                     ),
                 ],
               ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onNavBarTap,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Tìm kiếm'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book_online),
+            label: 'Đặt phòng',
+          ),
+        ],
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+      ),
     );
   }
 }

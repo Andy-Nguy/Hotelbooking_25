@@ -1,5 +1,6 @@
 // lib/app.dart
 import 'package:flutter/material.dart';
+import 'screens/main_screen.dart'; // Import MainScreen sẽ tạo ở bước 2
 import 'screens/home/home_screen.dart'; // Import HomeScreen sẽ tạo ở bước 3
 
 class MyApp extends StatelessWidget {
@@ -8,9 +9,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Marriott Bonvoy Mobile',
+      title: 'Hotel Booking App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomeScreen(), // Sử dụng HomeScreen thay vì HomePage
+      home: const MainScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
