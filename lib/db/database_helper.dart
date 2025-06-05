@@ -666,7 +666,7 @@ class DatabaseHelper {
     });
     batchLoaiPhong.insert(tableLoaiPhong, {
       'IDKhachSan': jwPhuQuocId,
-      'TenLoaiPhong': 'Emerald Bay View',
+      'TenLoaiPhong': 'Emerald Bay View2',
       'MoTa': 'Diện tích 53m²,2 giường đơn ban công riêng nhìn ra bãi biển.',
       'SoKhachToiDa': 3,
       'GiaCoBanMoiDem': 7500000,
@@ -763,6 +763,20 @@ class DatabaseHelper {
         roomTypes.firstWhere(
               (rt) =>
                   rt['TenLoaiPhong'] == 'Emerald Bay View' &&
+                  rt['IDKhachSan'] == jwPhuQuocId,
+            )['IDLoaiPhong']
+            as int;
+    int jwPhuQuocEmeral1dRTId =
+        roomTypes.firstWhere(
+              (rt) =>
+                  rt['TenLoaiPhong'] == 'Emerald Bay View2' &&
+                  rt['IDKhachSan'] == jwPhuQuocId,
+            )['IDLoaiPhong']
+            as int;
+    int jwPhuQuocDeluxedRTId =
+        roomTypes.firstWhere(
+              (rt) =>
+                  rt['TenLoaiPhong'] == 'Phòng Deluxe Emerald Bay View' &&
                   rt['IDKhachSan'] == jwPhuQuocId,
             )['IDLoaiPhong']
             as int;
@@ -986,12 +1000,90 @@ class DatabaseHelper {
       'ChuThich': 'Phòng',
     });
 
-    //
+    //phòng emerald bay view_phuquoc
     batchAnhLP.insert(tableAnhLoaiPhong, {
       'IDLoaiPhong': jwPhuQuocEmeraldRTId,
-      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view_gallery1.jpg',
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view_gallery1.webp',
       'ChuThich': 'Ban công view biển',
     });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocEmeraldRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view_gallery2.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocEmeraldRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view_gallery3.jpeg',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocEmeraldRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view_gallery4.jpeg',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocEmeraldRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view_gallery5.webp',
+      'ChuThich': 'Phòng',
+    });
+    //phòng emerald bay view2_phuquoc
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view1_gallery1.webp',
+      'ChuThich': 'Ban công view biển',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view1_gallery2.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view1_gallery3.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view1_gallery4.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_emerald_bay_view1_gallery5.webp',
+      'ChuThich': 'Phòng',
+    });
+    //phòng deluxe emerald bay view_phuquoc
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_deluxe_emerald_bay_view_gallery1.jpeg',
+      'ChuThich': 'Ban công view biển',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_deluxe_emerald_bay_view_gallery2.webp',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_deluxe_emerald_bay_view_gallery3.jpeg',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_deluxe_emerald_bay_view_gallery4.jpeg',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_deluxe_emerald_bay_view_gallery5.jpeg',
+      'ChuThich': 'Phòng',
+    });
+    batchAnhLP.insert(tableAnhLoaiPhong, {
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'UrlAnh': 'assets/image/jw_phuquoc_deluxe_emerald_bay_view_gallery6.jpg',
+      'ChuThich': 'Phòng',
+    });
+
     try {
       await batchAnhLP.commit(noResult: true);
       print("SQLite: Đã chèn AnhLoaiPhong.");
@@ -1185,6 +1277,88 @@ class DatabaseHelper {
       'SoPhong': 'P_EB402',
       'DangTrong': 1,
     });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocEmeraldRTId,
+      'SoPhong': 'P_EB403',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocEmeraldRTId,
+      'SoPhong': 'P_EB404',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocEmeraldRTId,
+      'SoPhong': 'P_EB405',
+      'DangTrong': 1,
+    });
+    // Phòng Emerald Bay View 1
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'SoPhong': 'P_EB1_501',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'SoPhong': 'P_EB1_502',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'SoPhong': 'P_EB1_503',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'SoPhong': 'P_EB1_504',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocEmeral1dRTId,
+      'SoPhong': 'P_EB1_505',
+      'DangTrong': 1,
+    });
+
+    // Phòng Deluxe Emerald Bay View
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'SoPhong': 'P_DEB1_601',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'SoPhong': 'P_DEB1_602',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'SoPhong': 'P_DEB1_603',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'SoPhong': 'P_DEB1_604',
+      'DangTrong': 1,
+    });
+    batchPhong.insert(tablePhong, {
+      'IDKhachSan': jwPhuQuocId,
+      'IDLoaiPhong': jwPhuQuocDeluxedRTId,
+      'SoPhong': 'P_DEB1_605',
+      'DangTrong': 1,
+    });
+    //
     try {
       await batchPhong.commit(noResult: true);
       print("SQLite: Đã chèn Phong.");
