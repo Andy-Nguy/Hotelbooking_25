@@ -1661,7 +1661,7 @@ class DatabaseHelper {
 
         // Kiểm tra xung đột đặt phòng
         final bookings = await txn.query(
-          tableDatPhong,
+          tableDatPhong, // đã sửa đúng tên bảng
           where:
               'IDPhong = ? AND TrangThai = ? AND ((NgayNhanPhong <= ? AND NgayTraPhong >= ?) OR (NgayNhanPhong <= ? AND NgayTraPhong >= ?))',
           whereArgs: [
@@ -1675,7 +1675,7 @@ class DatabaseHelper {
         );
         if (bookings.isNotEmpty) return false;
 
-        // Tính số ngày
+        // Tính số đêm
         final soDem = checkOutDate.difference(checkInDate).inDays;
 
         // Chèn thông tin đặt phòng
@@ -1721,5 +1721,73 @@ class DatabaseHelper {
       print("SQLite: Đăng nhập thất bại cho email $email");
       return null;
     }
+  }
+
+  //xử lý thánh toán
+  // Trong DatabaseHelper
+  Future<int> bookRoomTemp({
+    required int idLoaiPhong,
+    required int idNguoiDung,
+    required DateTime checkInDate,
+    required DateTime checkOutDate,
+    required int numberOfGuests,
+    required double giaMoiDemKhiDat,
+    required double totalCost,
+    required Map<String, dynamic> userInfo,
+    String? specialRequest,
+  }) async {
+    final db = await database;
+
+    // Truy vấn lấy 1 phòng trống theo loại phòng
+    final availableRooms = await db.query(
+      'phong',
+      where: 'IDLoaiPhong = ? AND DangTrong = 1',
+      whereArgs: [idLoaiPhong],
+    );
+
+    if (availableRooms.isEmpty) {
+      throw Exception('Không có phòng nào còn trống thuộc loại phòng này');
+    }
+
+    final idPhong = availableRooms.first['IDPhong'] as int;
+
+    final booking = {
+      'IDNguoiDung': idNguoiDung,
+      'IDPhong': idPhong,
+      'NgayNhanPhong': checkInDate.toIso8601String(),
+      'NgayTraPhong': checkOutDate.toIso8601String(),
+      'SoDem': checkOutDate.difference(checkInDate).inDays,
+      'GiaMoiDemKhiDat': giaMoiDemKhiDat,
+      'TongTien': totalCost,
+      'YeuCauDacBiet':
+          specialRequest?.isNotEmpty == true ? specialRequest : null,
+      'TrangThai': 'pending',
+    };
+
+    return await db.insert('datphong', booking);
+  }
+
+  Future<void> updateBookingStatus(
+    int idDatPhong,
+    String status,
+    String? maGiaoDich,
+  ) async {
+    final db = await database;
+    await db.update(
+      'bookings',
+      {'TrangThai': status, 'MaGiaoDich': maGiaoDich},
+      where: 'IDDatPhong = ?',
+      whereArgs: [idDatPhong],
+    );
+  }
+
+  Future<Map<String, dynamic>?> getBookingById(int idDatPhong) async {
+    final db = await database;
+    final result = await db.query(
+      'bookings',
+      where: 'IDDatPhong = ?',
+      whereArgs: [idDatPhong],
+    );
+    return result.isNotEmpty ? result.first : null;
   }
 }

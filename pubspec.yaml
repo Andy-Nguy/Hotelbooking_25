@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^1.2.2 # Thư viện HTTP để thực hiện các yêu cầu mạng
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -38,6 +39,7 @@ dependencies:
   path_provider: ^2.0.11 # Để lấy đường dẫn lưu database
   intl: ^0.18.1 # Để định dạng ngày tháng (tùy chọn)
   shared_preferences: ^2.2.2
+  crypto: ^3.0.6
 
 dev_dependencies:
   flutter_test:

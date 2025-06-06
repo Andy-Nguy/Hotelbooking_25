@@ -1,29 +1,17 @@
-// // lib/main.dart
-// import 'package:flutter/material.dart';
-// import 'package:flutter_hotelbooking_25/db/database_helper.dart';
-// import 'app.dart'; // Import file app.dart sẽ tạo ở bước 2
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await DatabaseHelper.instance.resetDatabase();
-
-//   runApp(const MyApp());
-// }
-
 import 'package:flutter/material.dart';
-import 'package:flutter_hotelbooking_25/screens/UserProfile_screen.dart';
+import 'package:flutter_hotelbooking_25/db/database_helper.dart';
+import 'package:flutter_hotelbooking_25/screens/booking_detail_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/booking_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/home/home_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/hotel_details_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/login_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/main_screen.dart';
-import 'package:flutter_hotelbooking_25/db/database_helper.dart';
+import 'package:flutter_hotelbooking_25/screens/UserProfile_screen.dart';
+import 'package:flutter_hotelbooking_25/screens/payment_Screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DatabaseHelper.instance.resetDatabase();
-
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -40,6 +28,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const MainScreen(),
         '/user_profile': (context) => const UserProfileScreen(),
+        '/booking_detail': (context) => const BookingDetailScreen(),
+        '/payment': (context) => const PaymentScreen(),
         '/hotel_details':
             (context) => const HotelDetailsScreen(
               hotelId: 1,

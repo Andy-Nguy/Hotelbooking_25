@@ -85,7 +85,7 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
               const SnackBar(content: Text('Đăng nhập thành công!')),
             );
           }
-          Navigator.pop(context); // Quay lại trang chọn phòng
+          Navigator.pop(context);
         } else {
           print(
             'HotelDetailsScreen: Người dùng hủy đăng nhập hoặc đăng nhập thất bại',
@@ -95,11 +95,14 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
         print(
           'HotelDetailsScreen: Người dùng đã đăng nhập với IDNguoiDung: $idNguoiDung, điều hướng đến BookingScreen',
         );
-        await Navigator.pushNamed(
+        final result = await Navigator.pushNamed(
           context,
           '/booking',
           arguments: {'idLoaiPhong': idLoaiPhong, 'roomType': roomType},
         );
+        print(
+          'HotelDetailsScreen: Kết quả từ BookingScreen: $result',
+        ); // Thêm log này
       }
     } catch (e) {
       print('HotelDetailsScreen: Lỗi trong _navigateToBooking: $e');
