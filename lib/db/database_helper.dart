@@ -114,8 +114,25 @@ class DatabaseHelper {
     UNIQUE (IDKhachSan, SoPhong)
   )
   ''');
+    //   batch.execute('''
+    // CREATE TABLE $tableDatPhong (
+    //   IDDatPhong INTEGER PRIMARY KEY AUTOINCREMENT,
+    //   IDNguoiDung INTEGER NOT NULL,
+    //   IDPhong INTEGER NOT NULL,
+    //   NgayNhanPhong TEXT NOT NULL,
+    //   NgayTraPhong TEXT NOT NULL,
+    //   SoDem INTEGER,
+    //   GiaMoiDemKhiDat REAL,
+    //   TongTien REAL,
+    //   NgayDatPhong TEXT NOT NULL DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW', 'localtime')),
+    //   TrangThai TEXT NOT NULL DEFAULT 'confirmed',
+    //   YeuCauDacBiet TEXT,
+    //   FOREIGN KEY (IDNguoiDung) REFERENCES $tableTaiKhoanNguoiDung (IDNguoiDung) ON DELETE CASCADE,
+    //   FOREIGN KEY (IDPhong) REFERENCES $tablePhong (IDPhong)
+    // )
+    // ''');
     batch.execute('''
-  CREATE TABLE $tableDatPhong (
+  CREATE TABLE DatPhong (
     IDDatPhong INTEGER PRIMARY KEY AUTOINCREMENT,
     IDNguoiDung INTEGER NOT NULL,
     IDPhong INTEGER NOT NULL,
@@ -127,10 +144,11 @@ class DatabaseHelper {
     NgayDatPhong TEXT NOT NULL DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW', 'localtime')),
     TrangThai TEXT NOT NULL DEFAULT 'confirmed',
     YeuCauDacBiet TEXT,
-    FOREIGN KEY (IDNguoiDung) REFERENCES $tableTaiKhoanNguoiDung (IDNguoiDung) ON DELETE CASCADE,
-    FOREIGN KEY (IDPhong) REFERENCES $tablePhong (IDPhong)
+    MaGiaoDich TEXT, -- Thêm cột này
+    FOREIGN KEY (IDNguoiDung) REFERENCES TaiKhoanNguoiDung (IDNguoiDung) ON DELETE CASCADE,
+    FOREIGN KEY (IDPhong) REFERENCES Phong (IDPhong)
   )
-  ''');
+''');
     batch.execute('''
   CREATE TABLE $tableTienNghi (
     IDTienNghi INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1634,8 +1652,8 @@ class DatabaseHelper {
     return null;
   }
 
-  // Đặt phòng
-  Future<bool> bookRoom({
+  // Đặt phòng tạm thời
+  Future<int> bookRoomTemp({
     required int idLoaiPhong,
     required int idNguoiDung,
     required DateTime checkInDate,
@@ -1644,69 +1662,190 @@ class DatabaseHelper {
     required double giaMoiDemKhiDat,
     required double totalCost,
     required Map<String, dynamic> userInfo,
-    required String specialRequest,
+    String? specialRequest,
   }) async {
     final db = await database;
     try {
-      return await db.transaction((txn) async {
-        // Kiểm tra tính khả dụng của phòng
-        final rooms = await txn.query(
-          tablePhong,
-          where: 'IDLoaiPhong = ? AND DangTrong = ?',
-          whereArgs: [idLoaiPhong, 1],
-        );
-        if (rooms.isEmpty) return false;
+      // Chọn một phòng trống thuộc loại phòng
+      final rooms = await db.query(
+        tablePhong,
+        where: 'IDLoaiPhong = ? AND DangTrong = ?',
+        whereArgs: [idLoaiPhong, 1],
+        limit: 1,
+      );
+      if (rooms.isEmpty) {
+        print('SQLite: Không còn phòng trống cho loại phòng $idLoaiPhong');
+        throw Exception('Không còn phòng trống cho loại phòng này');
+      }
+      final idPhong = rooms.first['IDPhong'] as int;
 
-        final idPhong = rooms.first['IDPhong'] as int;
+      // Tính số đêm
+      final soDem = checkOutDate.difference(checkInDate).inDays;
 
-        // Kiểm tra xung đột đặt phòng
-        final bookings = await txn.query(
-          tableDatPhong, // đã sửa đúng tên bảng
-          where:
-              'IDPhong = ? AND TrangThai = ? AND ((NgayNhanPhong <= ? AND NgayTraPhong >= ?) OR (NgayNhanPhong <= ? AND NgayTraPhong >= ?))',
-          whereArgs: [
-            idPhong,
-            'confirmed',
-            checkOutDate.toIso8601String(),
-            checkInDate.toIso8601String(),
-            checkInDate.toIso8601String(),
-            checkOutDate.toIso8601String(),
-          ],
-        );
-        if (bookings.isNotEmpty) return false;
+      // Chèn thông tin đặt phòng
+      final booking = {
+        'IDNguoiDung': idNguoiDung,
+        'IDPhong': idPhong,
+        'NgayNhanPhong': checkInDate.toIso8601String(),
+        'NgayTraPhong': checkOutDate.toIso8601String(),
+        'SoDem': soDem,
+        'GiaMoiDemKhiDat': giaMoiDemKhiDat,
+        'TongTien': totalCost,
+        'YeuCauDacBiet': specialRequest,
+        'TrangThai': 'pending',
+      };
+      final idDatPhong = await db.insert(tableDatPhong, booking);
+      print('SQLite: Đã chèn đặt phòng tạm thời: IDDatPhong = $idDatPhong');
 
-        // Tính số đêm
-        final soDem = checkOutDate.difference(checkInDate).inDays;
+      // Cập nhật trạng thái phòng thành không trống
+      final updateSuccess = await updateRoomStatus(idPhong, 0);
+      if (!updateSuccess) {
+        print('SQLite: Lỗi khi cập nhật trạng thái phòng $idPhong');
+        throw Exception('Không thể cập nhật trạng thái phòng');
+      }
 
-        // Chèn thông tin đặt phòng
-        final idDatPhong = await txn.insert(tableDatPhong, {
-          'IDNguoiDung': idNguoiDung,
-          'IDPhong': idPhong,
-          'NgayNhanPhong': checkInDate.toIso8601String(),
-          'NgayTraPhong': checkOutDate.toIso8601String(),
-          'SoDem': soDem,
-          'GiaMoiDemKhiDat': giaMoiDemKhiDat,
-          'TongTien': totalCost,
-          'YeuCauDacBiet': specialRequest.isNotEmpty ? specialRequest : null,
-        });
-
-        // Cập nhật trạng thái phòng
-        await txn.update(
-          tablePhong,
-          {'DangTrong': 0},
-          where: 'IDPhong = ?',
-          whereArgs: [idPhong],
-        );
-
-        print('Đặt phòng thành công: IDDatPhong = $idDatPhong');
-        return true;
-      });
+      return idDatPhong;
     } catch (e) {
-      print('Lỗi khi đặt phòng: $e');
+      print('SQLite: Lỗi khi chèn đặt phòng tạm thời: $e');
+      rethrow;
+    }
+  }
+
+  // Cập nhật trạng thái phòng
+  Future<bool> updateRoomStatus(int idPhong, int dangTrong) async {
+    final db = await database;
+    try {
+      print('--- Bắt đầu updateRoomStatus ---');
+      print('IDPhong kiểm tra: $idPhong, DangTrong: $dangTrong');
+      print('Database đã mở thành công');
+
+      // Kiểm tra xem IDPhong có tồn tại không
+      final roomCheck = await db.query(
+        tablePhong,
+        where: 'IDPhong = ?',
+        whereArgs: [idPhong],
+      );
+      if (roomCheck.isEmpty) {
+        print('SQLite: Lỗi - IDPhong $idPhong không tồn tại trong bảng Phong');
+        return false;
+      }
+
+      final result = await db.update(
+        tablePhong,
+        {'DangTrong': dangTrong},
+        where: 'IDPhong = ?',
+        whereArgs: [idPhong],
+      );
+      print('SQLite: Số hàng bị ảnh hưởng trong updateRoomStatus: $result');
+      return result > 0;
+    } catch (e) {
+      print('SQLite: Lỗi khi cập nhật trạng thái phòng: $e');
       return false;
     }
   }
 
+  // // Đảm bảo getRoomTypeCountsPerHotel trả về số lượng phòng trống chính xác
+  // Future<List<Map<String, dynamic>>> getRoomTypeCountsPerHotel(
+  //   int hotelId,
+  // ) async {
+  //   final db = await database;
+  //   try {
+  //     final result = await db.rawQuery(
+  //       '''
+  //       SELECT
+  //         lp.IDLoaiPhong,
+  //         lp.TenLoaiPhong,
+  //         COUNT(p.IDPhong) AS TongSoPhongCuaLoaiNay,
+  //         SUM(CASE WHEN p.DangTrong = 1 THEN 1 ELSE 0 END) AS SoPhongTrong,
+  //         SUM(CASE WHEN p.DangTrong = 0 THEN 1 ELSE 0 END) AS SoPhongDaDat
+  //       FROM $tableLoaiPhong lp
+  //       LEFT JOIN $tablePhong p ON lp.IDLoaiPhong = p.IDLoaiPhong
+  //       WHERE lp.IDKhachSan = ?
+  //       GROUP BY lp.IDLoaiPhong, lp.TenLoaiPhong
+  //       ORDER BY lp.TenLoaiPhong
+  //       ''',
+  //       [hotelId],
+  //     );
+  //     print('SQLite: Thống kê loại phòng cho IDKhachSan $hotelId: $result');
+  //     return result;
+  //   } catch (e) {
+  //     print('SQLite: Lỗi khi lấy thống kê loại phòng: $e');
+  //     rethrow;
+  //   }
+  // }
+
+  // Sửa hàm updateBookingStatus để sử dụng bảng DatPhong
+  Future<void> updateBookingStatus(
+    int idDatPhong,
+    String status,
+    String? paymentMethod,
+  ) async {
+    final db = await database;
+    try {
+      print(
+        'SQLite: Cập nhật trạng thái đặt phòng IDDatPhong: $idDatPhong, trạng thái: $status',
+      );
+      final result = await db.update(
+        tableDatPhong,
+        {'TrangThai': status},
+        where: 'IDDatPhong = ?',
+        whereArgs: [idDatPhong],
+      );
+      print('SQLite: Số hàng bị ảnh hưởng trong updateBookingStatus: $result');
+    } catch (e) {
+      print('SQLite: Lỗi khi cập nhật trạng thái đặt phòng: $e');
+      rethrow;
+    }
+  }
+
+  // Sửa hàm getBookingById để sử dụng bảng DatPhong
+  Future<Map<String, dynamic>?> getBookingById(int idDatPhong) async {
+    final db = await database;
+    try {
+      final result = await db.query(
+        tableDatPhong,
+        where: 'IDDatPhong = ?',
+        whereArgs: [idDatPhong],
+      );
+      if (result.isNotEmpty) {
+        print('SQLite: Lấy đặt phòng IDDatPhong: $idDatPhong - Tìm thấy');
+        return result.first;
+      }
+      print('SQLite: Lấy đặt phòng IDDatPhong: $idDatPhong - Không tìm thấy');
+      return null;
+    } catch (e) {
+      print('SQLite: Lỗi khi lấy thông tin đặt phòng: $e');
+      rethrow;
+    }
+  }
+
+  // // Đảm bảo getRoomTypeCountsPerHotel trả về dữ liệu chính xác
+  // Future<List<Map<String, dynamic>>> getRoomTypeCountsPerHotel(int hotelId) async {
+  //   final db = await database;
+  //   try {
+  //     final result = await db.rawQuery(
+  //       '''
+  //       SELECT
+  //         lp.IDLoaiPhong,
+  //         lp.TenLoaiPhong,
+  //         COUNT(p.IDPhong) AS TongSoPhongCuaLoaiNay,
+  //         SUM(CASE WHEN p.DangTrong = 1 THEN 1 ELSE 0 END) AS SoPhongTrong,
+  //         SUM(CASE WHEN p.DangTrong = 0 THEN 1 ELSE 0 END) AS SoPhongDaDat
+  //       FROM $tableLoaiPhong lp
+  //       LEFT JOIN $tablePhong p ON lp.IDLoaiPhong = p.IDLoaiPhong
+  //       WHERE lp.IDKhachSan = ?
+  //       GROUP BY lp.IDLoaiPhong, lp.TenLoaiPhong
+  //       ORDER BY lp.TenLoaiPhong
+  //       ''',
+  //       [hotelId],
+  //     );
+  //     print('SQLite: Thống kê loại phòng cho IDKhachSan $hotelId: $result');
+  //     return result;
+  //   } catch (e) {
+  //     print('SQLite: Lỗi khi lấy thống kê loại phòng: $e');
+  //     rethrow;
+  //   }
+  // }
   Future loginUser(String email, String password) async {
     final db = await database;
     final result = await db.query(
@@ -1721,73 +1860,5 @@ class DatabaseHelper {
       print("SQLite: Đăng nhập thất bại cho email $email");
       return null;
     }
-  }
-
-  //xử lý thánh toán
-  // Trong DatabaseHelper
-  Future<int> bookRoomTemp({
-    required int idLoaiPhong,
-    required int idNguoiDung,
-    required DateTime checkInDate,
-    required DateTime checkOutDate,
-    required int numberOfGuests,
-    required double giaMoiDemKhiDat,
-    required double totalCost,
-    required Map<String, dynamic> userInfo,
-    String? specialRequest,
-  }) async {
-    final db = await database;
-
-    // Truy vấn lấy 1 phòng trống theo loại phòng
-    final availableRooms = await db.query(
-      'phong',
-      where: 'IDLoaiPhong = ? AND DangTrong = 1',
-      whereArgs: [idLoaiPhong],
-    );
-
-    if (availableRooms.isEmpty) {
-      throw Exception('Không có phòng nào còn trống thuộc loại phòng này');
-    }
-
-    final idPhong = availableRooms.first['IDPhong'] as int;
-
-    final booking = {
-      'IDNguoiDung': idNguoiDung,
-      'IDPhong': idPhong,
-      'NgayNhanPhong': checkInDate.toIso8601String(),
-      'NgayTraPhong': checkOutDate.toIso8601String(),
-      'SoDem': checkOutDate.difference(checkInDate).inDays,
-      'GiaMoiDemKhiDat': giaMoiDemKhiDat,
-      'TongTien': totalCost,
-      'YeuCauDacBiet':
-          specialRequest?.isNotEmpty == true ? specialRequest : null,
-      'TrangThai': 'pending',
-    };
-
-    return await db.insert('datphong', booking);
-  }
-
-  Future<void> updateBookingStatus(
-    int idDatPhong,
-    String status,
-    String? maGiaoDich,
-  ) async {
-    final db = await database;
-    await db.update(
-      'bookings',
-      {'TrangThai': status, 'MaGiaoDich': maGiaoDich},
-      where: 'IDDatPhong = ?',
-      whereArgs: [idDatPhong],
-    );
-  }
-
-  Future<Map<String, dynamic>?> getBookingById(int idDatPhong) async {
-    final db = await database;
-    final result = await db.query(
-      'bookings',
-      where: 'IDDatPhong = ?',
-      whereArgs: [idDatPhong],
-    );
-    return result.isNotEmpty ? result.first : null;
   }
 }

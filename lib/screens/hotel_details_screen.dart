@@ -77,15 +77,13 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
         );
         print('HotelDetailsScreen: Kết quả từ LoginScreen: $result');
         if (result != null && (result is Map && result['success'] == true)) {
-          print(
-            'HotelDetailsScreen: Đăng nhập thành công, quay lại HotelDetailsScreen',
-          );
+          print('HotelDetailsScreen: Đăng nhập thành công, làm mới dữ liệu');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Đăng nhập thành công!')),
             );
+            await _loadHotelFullDetails();
           }
-          Navigator.pop(context);
         } else {
           print(
             'HotelDetailsScreen: Người dùng hủy đăng nhập hoặc đăng nhập thất bại',
@@ -98,11 +96,19 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
         final result = await Navigator.pushNamed(
           context,
           '/booking',
-          arguments: {'idLoaiPhong': idLoaiPhong, 'roomType': roomType},
+          arguments: {
+            'idLoaiPhong': idLoaiPhong,
+            'roomType': roomType,
+            'hotelId': widget.hotelId,
+          },
         );
-        print(
-          'HotelDetailsScreen: Kết quả từ BookingScreen: $result',
-        ); // Thêm log này
+        print('HotelDetailsScreen: Kết quả từ BookingScreen: $result');
+        if (result != null && result is bool && result == true) {
+          print('HotelDetailsScreen: Đặt phòng thành công, làm mới dữ liệu');
+          if (mounted) {
+            await _loadHotelFullDetails();
+          }
+        }
       }
     } catch (e) {
       print('HotelDetailsScreen: Lỗi trong _navigateToBooking: $e');
@@ -414,7 +420,7 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                                 .where((room) => room['DangTrong'] == 1)
                                 .toList();
                         print(
-                          "Số lượng phòng còn trống: ${availableRooms.length}/${roomsSpecific.length}",
+                          "HotelDetailsScreen: Số lượng phòng còn trống cho IDLoaiPhong ${roomType['IDLoaiPhong']}: ${availableRooms.length}/${roomsSpecific.length}",
                         );
 
                         return Card(

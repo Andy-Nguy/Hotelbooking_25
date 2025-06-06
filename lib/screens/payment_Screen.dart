@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_hotelbooking_25/db/database_helper.dart';
+import 'package:flutter_hotelbooking_25/db/xulylogicdatphong.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -24,22 +25,31 @@ class _PaymentScreenState extends State<PaymentScreen> {
     });
 
     try {
-      // Mock logic thanh toán
-      // Thay thế bằng gọi API thực tế nếu tích hợp cổng thanh toán
-      await Future.delayed(
-        const Duration(seconds: 2),
-      ); // Giả lập thời gian xử lý
       final dbHelper = DatabaseHelper.instance;
+
+      // Lấy thông tin đặt phòng
+      final booking = await dbHelper.getBookingById(idDatPhong);
+      if (booking == null) {
+        throw Exception('Không tìm thấy thông tin đặt phòng');
+      }
+
+      // Cập nhật trạng thái đặt phòng thành 'paid'
       await dbHelper.updateBookingStatus(
         idDatPhong,
         'paid',
         _selectedPaymentMethod,
       );
 
+      // Cập nhật trạng thái phòng thành 'không trống' (DangTrong = 0)
+      final idPhong = booking['IDPhong'] as int;
+      await dbHelper.updateRoomStatus(idPhong, 0);
+
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Thanh toán thành công!')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Thanh toán thành công! Phòng đã được đặt.'),
+          ),
+        );
         Navigator.pop(context, true); // Trả về kết quả thành công
       }
     } catch (e) {
