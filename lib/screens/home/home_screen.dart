@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hotelbooking_25/screens/hotel_details_screen.dart';
 import 'package:flutter_hotelbooking_25/db/database_helper.dart';
+import 'package:flutter_hotelbooking_25/screens/hotel_details_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // --- BenefitItem Widget ---
 class BenefitItem extends StatelessWidget {
@@ -61,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 0;
   bool _isLoadingHotels = true;
   List<Map<String, dynamic>> _displayedHotels = [];
+  bool _isLoggedIn = false;
 
   @override
   void initState() {
@@ -72,7 +74,27 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
+    _checkLoginStatus();
     _loadInitialData();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final idNguoiDung = prefs.getInt('idNguoiDung');
+    setState(() {
+      _isLoggedIn = idNguoiDung != null;
+    });
+  }
+
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('idNguoiDung');
+    setState(() {
+      _isLoggedIn = false;
+    });
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Đăng xuất thành công!')));
   }
 
   Future<void> _loadInitialData() async {
@@ -84,14 +106,23 @@ class _HomeScreenState extends State<HomeScreen> {
       _isLoadingHotels = true;
     });
     final dbHelper = DatabaseHelper.instance;
-    List<Map<String, dynamic>> allHotels = await dbHelper.getAllHotels();
-    print("HomeScreen: Dữ liệu khách sạn lấy được: $allHotels");
-    if (!mounted) return;
-    setState(() {
-      _displayedHotels = allHotels.take(3).toList();
-      print("HomeScreen: Dữ liệu hiển thị: $_displayedHotels");
-      _isLoadingHotels = false;
-    });
+    try {
+      List<Map<String, dynamic>> allHotels = await dbHelper.getAllHotels();
+      print("HomeScreen: Dữ liệu khách sạn lấy được: $allHotels");
+      if (!mounted) return;
+      setState(() {
+        _displayedHotels = allHotels.take(3).toList();
+        print("HomeScreen: Dữ liệu hiển thị: $_displayedHotels");
+        _isLoadingHotels = false;
+      });
+    } catch (e) {
+      print("Lỗi khi tải khách sạn: $e");
+      if (!mounted) return;
+      setState(() {
+        _isLoadingHotels = false;
+        _displayedHotels = [];
+      });
+    }
   }
 
   @override
@@ -137,14 +168,34 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 150,
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(right: 10.0),
-                  child: Icon(
-                    Icons.person_outline,
-                    size: 20.0,
-                    color: Colors.black87,
-                  ),
-                ),
+                _isLoggedIn
+                    ? Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.logout,
+                          size: 25.0, // Tăng size để dễ nhìn hơn
+                          color: Colors.black87,
+                        ),
+                        onPressed: _logout,
+                        tooltip: 'Đăng xuất',
+                      ),
+                    )
+                    : Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.person_outline, // Sử dụng icon hợp lệ
+                          size: 25.0,
+                          color: Colors.black87,
+                        ),
+                        onPressed: () {
+                          print('Mời bạn đăng nhập!');
+                          Navigator.pushNamed(context, '/login');
+                        },
+                        tooltip: 'Đăng nhập',
+                      ),
+                    ),
               ],
             ),
           ),
@@ -304,7 +355,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/search');
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 foregroundColor: Colors.black,
@@ -346,111 +399,140 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? const Center(child: CircularProgressIndicator())
                     : _displayedHotels.isEmpty
                     ? const Center(child: Text('Không có khách sạn nào.'))
-                    : SizedBox(
-                      height: 350.0,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _displayedHotels.length,
-                        itemBuilder: (context, index) {
-                          final hotel = _displayedHotels[index];
-                          final int hotelId = hotel['IDKhachSan'] as int;
-                          final String hotelName =
-                              hotel['TenKhachSan'] ?? 'Khách sạn';
+                    : Column(
+                      children: [
+                        SizedBox(
+                          height: 350.0,
+                          child: PageView.builder(
+                            controller: _pageController,
+                            itemCount: _displayedHotels.length,
+                            itemBuilder: (context, index) {
+                              final hotel = _displayedHotels[index];
+                              final int hotelId = hotel['IDKhachSan'] as int;
+                              final String hotelName =
+                                  hotel['TenKhachSan'] ?? 'Khách sạn';
 
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => HotelDetailsScreen(
-                                        hotelId: hotelId,
-                                        hotelName: hotelName,
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => HotelDetailsScreen(
+                                            hotelId: hotelId,
+                                            hotelName: hotelName,
+                                          ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  width: 300.0,
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 10.0,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        offset: Offset(0, 2),
+                                        blurRadius: 5.0,
                                       ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              const BorderRadius.vertical(
+                                                top: Radius.circular(8.0),
+                                              ),
+                                          child:
+                                              hotel['UrlAnhChinh'] != null
+                                                  ? Image.asset(
+                                                    hotel['UrlAnhChinh'],
+                                                    fit: BoxFit.cover,
+                                                    width: double.infinity,
+                                                    errorBuilder: (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) {
+                                                      return const SizedBox(
+                                                        height: 200,
+                                                        child: Center(
+                                                          child: Text(
+                                                            'Không thể tải ảnh',
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  )
+                                                  : const Icon(
+                                                    Icons.hotel,
+                                                    size: 100,
+                                                    color: Colors.grey,
+                                                  ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              hotelName,
+                                              style: const TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10.0),
+                                            const Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: Icon(
+                                                Icons.arrow_forward,
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             },
-                            child: Container(
-                              width: 300.0,
-                              margin: const EdgeInsets.only(right: 10.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8.0),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    offset: Offset(0, 2),
-                                    blurRadius: 5.0,
-                                  ),
-                                ],
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            _displayedHotels.length,
+                            (index) => Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 3.0,
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(8.0),
-                                      ),
-                                      child:
-                                          hotel['UrlAnhChinh'] != null
-                                              ? Image.asset(
-                                                hotel['UrlAnhChinh'],
-                                                fit: BoxFit.cover,
-                                                width: double.infinity,
-                                                errorBuilder: (
-                                                  context,
-                                                  error,
-                                                  stackTrace,
-                                                ) {
-                                                  return const SizedBox(
-                                                    height: 200,
-                                                    child: Center(
-                                                      child: Text(
-                                                        'Không thể tải ảnh',
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              )
-                                              : const Icon(
-                                                Icons.hotel,
-                                                size: 100,
-                                                color: Colors.grey,
-                                              ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          hotelName,
-                                          style: const TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10.0),
-                                        const Align(
-                                          alignment: Alignment.bottomRight,
-                                          child: Icon(
-                                            Icons.arrow_forward,
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                              width: 8.0,
+                              height: 8.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color:
+                                    _currentPage == index
+                                        ? Colors.black87
+                                        : Colors.grey[400],
                               ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
               ],
             ),
@@ -508,7 +590,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black87,
                       foregroundColor: Colors.white,
@@ -527,7 +611,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.black87,
                       padding: const EdgeInsets.all(12.0),

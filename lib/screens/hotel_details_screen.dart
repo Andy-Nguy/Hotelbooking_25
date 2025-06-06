@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hotelbooking_25/db/database_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HotelDetailsScreen extends StatefulWidget {
   final int hotelId;
@@ -18,7 +19,7 @@ class HotelDetailsScreen extends StatefulWidget {
 class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
   bool _isLoading = true;
   Map<String, dynamic>? _hotelFullDetails;
-  int _currentIndex = 0; // Chỉ số của tab hiện tại
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -45,6 +46,69 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  Future<void> _navigateToBooking(
+    int idLoaiPhong,
+    Map<String, dynamic> roomType,
+  ) async {
+    print(
+      'HotelDetailsScreen: Bắt đầu _navigateToBooking với IDLoaiPhong: $idLoaiPhong, RoomType: $roomType',
+    );
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final int? idNguoiDung = prefs.getInt('idNguoiDung');
+      print(
+        'HotelDetailsScreen: IDNguoiDung từ SharedPreferences: $idNguoiDung',
+      );
+
+      if (idNguoiDung == null) {
+        print(
+          'HotelDetailsScreen: Người dùng chưa đăng nhập, điều hướng đến LoginScreen',
+        );
+        final result = await Navigator.pushNamed(
+          context,
+          '/login',
+          arguments: {
+            'fromBooking': true,
+            'idLoaiPhong': idLoaiPhong,
+            'roomType': roomType,
+          },
+        );
+        print('HotelDetailsScreen: Kết quả từ LoginScreen: $result');
+        if (result != null && (result is Map && result['success'] == true)) {
+          print(
+            'HotelDetailsScreen: Đăng nhập thành công, quay lại HotelDetailsScreen',
+          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Đăng nhập thành công!')),
+            );
+          }
+          Navigator.pop(context); // Quay lại trang chọn phòng
+        } else {
+          print(
+            'HotelDetailsScreen: Người dùng hủy đăng nhập hoặc đăng nhập thất bại',
+          );
+        }
+      } else {
+        print(
+          'HotelDetailsScreen: Người dùng đã đăng nhập với IDNguoiDung: $idNguoiDung, điều hướng đến BookingScreen',
+        );
+        await Navigator.pushNamed(
+          context,
+          '/booking',
+          arguments: {'idLoaiPhong': idLoaiPhong, 'roomType': roomType},
+        );
+      }
+    } catch (e) {
+      print('HotelDetailsScreen: Lỗi trong _navigateToBooking: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Đã xảy ra lỗi: $e')));
+      }
+    }
   }
 
   Widget _buildSectionTitle(BuildContext context, String title) {
@@ -182,22 +246,15 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
       _currentIndex = index;
     });
 
-    // Điều hướng đến các màn hình tương ứng
     switch (index) {
       case 0:
-        // Điều hướng đến Trang chủ
         print('Điều hướng đến Trang chủ');
-        // Navigator.pushReplacementNamed(context, '/home');
         break;
       case 1:
-        // Điều hướng đến Tìm kiếm
         print('Điều hướng đến Tìm kiếm');
-        // Navigator.pushReplacementNamed(context, '/search');
         break;
       case 2:
-        // Điều hướng đến Đặt phòng
         print('Điều hướng đến Đặt phòng');
-        // Navigator.pushReplacementNamed(context, '/bookings');
         break;
     }
   }
@@ -217,7 +274,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
               : ListView(
                 padding: const EdgeInsets.all(16.0),
                 children: [
-                  // Ảnh chính khách sạn
                   if (_hotelFullDetails!['UrlAnhChinh'] != null &&
                       (_hotelFullDetails!['UrlAnhChinh'] as String).isNotEmpty)
                     ClipRRect(
@@ -259,7 +315,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                     ),
                   const SizedBox(height: 16),
 
-                  // Tên và thông tin cơ bản
                   Text(
                     _hotelFullDetails!['TenKhachSan'] ?? 'Tên Khách Sạn',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -310,7 +365,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
 
-                  // Thư viện ảnh khách sạn
                   if (_hotelFullDetails!['gallery'] != null &&
                       (_hotelFullDetails!['gallery'] as List).isNotEmpty) ...[
                     _buildSectionTitle(context, 'Thư Viện Ảnh Khách Sạn'),
@@ -320,7 +374,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                     ),
                   ],
 
-                  // Tiện nghi khách sạn
                   if (_hotelFullDetails!['amenities'] != null &&
                       (_hotelFullDetails!['amenities'] as List).isNotEmpty) ...[
                     _buildSectionTitle(context, 'Tiện Nghi Khách Sạn'),
@@ -329,7 +382,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                     ),
                   ],
 
-                  // Danh sách loại phòng
                   _buildSectionTitle(context, 'Các Loại Phòng'),
                   if (_hotelFullDetails!['room_types'] == null ||
                       (_hotelFullDetails!['room_types'] as List).isEmpty)
@@ -358,6 +410,9 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                             roomsSpecific
                                 .where((room) => room['DangTrong'] == 1)
                                 .toList();
+                        print(
+                          "Số lượng phòng còn trống: ${availableRooms.length}/${roomsSpecific.length}",
+                        );
 
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -367,7 +422,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Ảnh loại phòng
                                 if (roomType['UrlAnhChinh'] != null &&
                                     (roomType['UrlAnhChinh'] as String)
                                         .isNotEmpty)
@@ -395,7 +449,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                                   ),
                                 const SizedBox(height: 12),
 
-                                // Chi tiết loại phòng
                                 Text(
                                   roomType['TenLoaiPhong'] ?? 'N/A',
                                   style: Theme.of(context).textTheme.titleMedium
@@ -427,7 +480,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                                   ),
                                 ),
 
-                                // Thư viện ảnh loại phòng
                                 if (roomType['gallery'] != null &&
                                     (roomType['gallery'] as List)
                                         .isNotEmpty) ...[
@@ -444,7 +496,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                                   ),
                                 ],
 
-                                // Tiện nghi loại phòng
                                 if (roomType['amenities'] != null &&
                                     (roomType['amenities'] as List)
                                         .isNotEmpty) ...[
@@ -459,7 +510,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                                   ),
                                 ],
 
-                                // Tình trạng phòng
                                 const SizedBox(height: 12),
                                 Text(
                                   'Phòng còn trống: ${availableRooms.length}/${roomsSpecific.length}',
@@ -482,9 +532,12 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                                       ),
                                       onPressed: () {
                                         print(
-                                          'Chọn loại phòng: ${roomType['TenLoaiPhong']} của KS ID: ${widget.hotelId}',
+                                          'HotelDetailsScreen: Nút "Chọn & Đặt Phòng Này" được nhấn cho IDLoaiPhong: ${roomType['IDLoaiPhong']}',
                                         );
-                                        // TODO: Điều hướng đến trang chọn phòng
+                                        _navigateToBooking(
+                                          roomType['IDLoaiPhong'] as int,
+                                          roomType,
+                                        );
                                       },
                                       child: const Text('Chọn & Đặt Phòng Này'),
                                     )
@@ -503,21 +556,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                     ),
                 ],
               ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onNavBarTap,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Tìm kiếm'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book_online),
-            label: 'Đặt phòng',
-          ),
-        ],
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-      ),
     );
   }
 }

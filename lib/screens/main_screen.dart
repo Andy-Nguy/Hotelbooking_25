@@ -18,8 +18,8 @@ class _MainScreenState extends State<MainScreen> {
   static final List<Widget> _screens = <Widget>[
     const HomeScreen(),
     const AboutScreen(),
-    const LoginScreen(),
     const ServiceScreen(),
+    const LoginScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -35,9 +35,9 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Service'),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: 'About'),
           BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Login'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Service'),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black87,

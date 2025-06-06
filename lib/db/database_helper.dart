@@ -244,6 +244,23 @@ class DatabaseHelper {
     print(
       "SQLite: IDs - Saigon: $jwSaigonId, Hanoi: $jwHanoiId, Phu Quoc: $jwPhuQuocId",
     );
+    // --- TaiKhoanNguoiDung ---/
+    // Chèn dữ liệu mẫu vào bảng TaiKhoanNguoiDung và lấy ID vừa chèn
+    int id = await db.insert(tableTaiKhoanNguoiDung, {
+      "HoTen": "Nguyen Van A",
+      'Email': "nguyenvana@gmail.com",
+      'MatKhauHash': "123456",
+      'SoDienThoai': "0123456789",
+      'NgayDangKy': DateTime.now().toIso8601String(),
+    });
+    print('Đã chèn dữ liệu mẫu vào bảng TaiKhoanNguoiDung: ID = $id');
+    // Kiểm tra dữ liệu vừa chèn
+    final insertedData = await db.query(
+      tableTaiKhoanNguoiDung,
+      where: 'IDNguoiDung = ?',
+      whereArgs: [id],
+    );
+    print('Dữ liệu vừa chèn: $insertedData');
 
     // --- TienNghi ---
     Batch batchTienNghi = db.batch();
@@ -1591,5 +1608,118 @@ class DatabaseHelper {
       "SQLite: getActiveBookingsInfo được gọi, nhưng không có dữ liệu DatPhong mẫu.",
     );
     return [];
+  }
+
+  // Lấy thông tin người dùng theo ID
+  Future<Map<String, dynamic>?> getUserById(int idNguoiDung) async {
+    final db = await database;
+    final result = await db.query(
+      tableTaiKhoanNguoiDung,
+      where: 'IDNguoiDung = ?',
+      whereArgs: [idNguoiDung],
+    );
+    return result.isNotEmpty ? result.first : null;
+  }
+
+  Future getUserByEmailAndPassword(String email, String password) async {
+    final db = await database;
+    final result = await db.query(
+      tableTaiKhoanNguoiDung,
+      where: 'Email = ? AND MatKhauHash = ?',
+      whereArgs: [email, password],
+    );
+    if (result.isNotEmpty) {
+      return result.first;
+    }
+    return null;
+  }
+
+  // Đặt phòng
+  Future<bool> bookRoom({
+    required int idLoaiPhong,
+    required int idNguoiDung,
+    required DateTime checkInDate,
+    required DateTime checkOutDate,
+    required int numberOfGuests,
+    required double giaMoiDemKhiDat,
+    required double totalCost,
+    required Map<String, dynamic> userInfo,
+    required String specialRequest,
+  }) async {
+    final db = await database;
+    try {
+      return await db.transaction((txn) async {
+        // Kiểm tra tính khả dụng của phòng
+        final rooms = await txn.query(
+          tablePhong,
+          where: 'IDLoaiPhong = ? AND DangTrong = ?',
+          whereArgs: [idLoaiPhong, 1],
+        );
+        if (rooms.isEmpty) return false;
+
+        final idPhong = rooms.first['IDPhong'] as int;
+
+        // Kiểm tra xung đột đặt phòng
+        final bookings = await txn.query(
+          tableDatPhong,
+          where:
+              'IDPhong = ? AND TrangThai = ? AND ((NgayNhanPhong <= ? AND NgayTraPhong >= ?) OR (NgayNhanPhong <= ? AND NgayTraPhong >= ?))',
+          whereArgs: [
+            idPhong,
+            'confirmed',
+            checkOutDate.toIso8601String(),
+            checkInDate.toIso8601String(),
+            checkInDate.toIso8601String(),
+            checkOutDate.toIso8601String(),
+          ],
+        );
+        if (bookings.isNotEmpty) return false;
+
+        // Tính số ngày
+        final soDem = checkOutDate.difference(checkInDate).inDays;
+
+        // Chèn thông tin đặt phòng
+        final idDatPhong = await txn.insert(tableDatPhong, {
+          'IDNguoiDung': idNguoiDung,
+          'IDPhong': idPhong,
+          'NgayNhanPhong': checkInDate.toIso8601String(),
+          'NgayTraPhong': checkOutDate.toIso8601String(),
+          'SoDem': soDem,
+          'GiaMoiDemKhiDat': giaMoiDemKhiDat,
+          'TongTien': totalCost,
+          'YeuCauDacBiet': specialRequest.isNotEmpty ? specialRequest : null,
+        });
+
+        // Cập nhật trạng thái phòng
+        await txn.update(
+          tablePhong,
+          {'DangTrong': 0},
+          where: 'IDPhong = ?',
+          whereArgs: [idPhong],
+        );
+
+        print('Đặt phòng thành công: IDDatPhong = $idDatPhong');
+        return true;
+      });
+    } catch (e) {
+      print('Lỗi khi đặt phòng: $e');
+      return false;
+    }
+  }
+
+  Future loginUser(String email, String password) async {
+    final db = await database;
+    final result = await db.query(
+      tableTaiKhoanNguoiDung,
+      where: 'Email = ? AND MatKhauHash = ?',
+      whereArgs: [email, password],
+    );
+    if (result.isNotEmpty) {
+      print("SQLite: Đăng nhập thành công cho email $email");
+      return result.first;
+    } else {
+      print("SQLite: Đăng nhập thất bại cho email $email");
+      return null;
+    }
   }
 }
