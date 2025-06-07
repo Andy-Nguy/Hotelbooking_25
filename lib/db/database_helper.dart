@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:flutter_hotelbooking_25/models/datphong.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -1616,16 +1618,16 @@ class DatabaseHelper {
     return [];
   }
 
-  // Lấy thông tin người dùng theo ID
-  Future<Map<String, dynamic>?> getUserById(int idNguoiDung) async {
-    final db = await database;
-    final result = await db.query(
-      tableTaiKhoanNguoiDung,
-      where: 'IDNguoiDung = ?',
-      whereArgs: [idNguoiDung],
-    );
-    return result.isNotEmpty ? result.first : null;
-  }
+  // // Lấy thông tin người dùng theo ID
+  // Future<Map<String, dynamic>?> getUserById(int idNguoiDung) async {
+  //   final db = await database;
+  //   final result = await db.query(
+  //     tableTaiKhoanNguoiDung,
+  //     where: 'IDNguoiDung = ?',
+  //     whereArgs: [idNguoiDung],
+  //   );
+  //   return result.isNotEmpty ? result.first : null;
+  // }
 
   Future getUserByEmailAndPassword(String email, String password) async {
     final db = await database;
@@ -1807,6 +1809,16 @@ class DatabaseHelper {
     }
   }
 
+  Future<Map<String, dynamic>?> getRoomStatus(int idPhong) async {
+    final db = await database;
+    final result = await db.query(
+      'rooms',
+      where: 'IDPhong = ?',
+      whereArgs: [idPhong],
+    );
+    return result.isNotEmpty ? result.first : null;
+  }
+
   // // Đảm bảo getRoomTypeCountsPerHotel trả về dữ liệu chính xác
   // Future<List<Map<String, dynamic>>> getRoomTypeCountsPerHotel(int hotelId) async {
   //   final db = await database;
@@ -1848,5 +1860,79 @@ class DatabaseHelper {
       print("SQLite: Đăng nhập thất bại cho email $email");
       return null;
     }
+  }
+
+  Future<List<Map<String, dynamic>>> getAllBookingsDetailed() async {
+    final db = await instance.database;
+
+    final result = await db.rawQuery('''
+    SELECT 
+      dp.IDDatPhong,
+      dp.NgayNhanPhong,
+      dp.NgayTraPhong,
+      dp.SoDem,
+      dp.GiaMoiDemKhiDat,
+      dp.TongTien,
+      dp.NgayDatPhong,
+      dp.TrangThai,
+      dp.YeuCauDacBiet,
+      dp.MaGiaoDich,
+      
+      nguoidung.HoTen AS TenNguoiDung,
+      nguoidung.Email,
+      
+      phong.IDPhong,
+      phong.SoPhong,
+      
+      loaiphong.IDLoaiPhong,
+      loaiphong.TenLoaiPhong,
+      loaiphong.MoTa AS MoTaLoaiPhong,
+      
+      khachsan.IDKhachSan,
+      khachsan.TenKhachSan,
+      khachsan.DiaChi,
+      khachsan.ThanhPho,
+      khachsan.SoDienThoaiKhachSan
+      
+    FROM DatPhong dp
+    INNER JOIN TaiKhoanNguoiDung nguoidung ON dp.IDNguoiDung = nguoidung.IDNguoiDung
+    INNER JOIN Phong phong ON dp.IDPhong = phong.IDPhong
+    INNER JOIN LoaiPhong loaiphong ON phong.IDLoaiPhong = loaiphong.IDLoaiPhong
+    INNER JOIN KhachSan khachsan ON phong.IDKhachSan = khachsan.IDKhachSan
+    ORDER BY dp.NgayDatPhong DESC
+  ''');
+
+    return result;
+  }
+
+  Future<Map<String, dynamic>?> getUserById(int id) async {
+    final db = await database;
+    try {
+      final result = await db.query(
+        tableTaiKhoanNguoiDung, // Sử dụng đúng tên bảng người dùng
+        where: 'IDNguoiDung = ?',
+        whereArgs: [id],
+      );
+      if (result.isNotEmpty) {
+        print('SQLite: Lấy người dùng IDNguoiDung: $id - Tìm thấy');
+        return result.first;
+      }
+      print('SQLite: Lấy người dùng IDNguoiDung: $id - Không tìm thấy');
+      return null;
+    } catch (e) {
+      print(
+        'SQLite: Lỗi khi lấy thông tin người dùng IDNguoiDung: $id - Lỗi: $e',
+      );
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getBookingsByUserId(int userId) async {
+    final db = await database;
+    return await db.query(
+      'DatPhong',
+      where: 'IDNguoiDung = ?',
+      whereArgs: [userId],
+    );
   }
 }

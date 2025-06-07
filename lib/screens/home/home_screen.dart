@@ -153,12 +153,23 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 10.0),
-                  child: Text(
-                    '☰',
-                    style: TextStyle(fontSize: 24.0, color: Colors.black87),
-                  ),
+                Builder(
+                  builder:
+                      (context) => Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/booking_list');
+                          },
+                          child: const Text(
+                            '☰',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),

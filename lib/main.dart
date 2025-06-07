@@ -6,13 +6,31 @@ import 'package:flutter_hotelbooking_25/screens/home/home_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/hotel_details_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/login_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/main_screen.dart';
-import 'package:flutter_hotelbooking_25/screens/UserProfile_screen.dart';
+import 'package:flutter_hotelbooking_25/screens/user/UserProfile_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/payment_Screen.dart';
+import 'package:workmanager/workmanager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DatabaseHelper.instance.resetDatabase();
+  // Xóa hoặc tạm thời comment dòng resetDatabase()
+  // await DatabaseHelper.instance.resetDatabase(); // Chỉ gọi khi cần thiết
+  await DatabaseHelper.instance.database; // Khởi tạo DB
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true); //
   runApp(const MyApp());
+}
+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    final dbHelper = DatabaseHelper.instance;
+    final idPhong = inputData?['idPhong'] as int?;
+    if (idPhong != null) {
+      await dbHelper.updateRoomStatus(
+        idPhong,
+        1,
+      ); // Trả phòng về trạng thái trống
+    }
+    return Future.value(true);
+  });
 }
 
 class MyApp extends StatelessWidget {

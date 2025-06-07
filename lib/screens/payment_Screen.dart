@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hotelbooking_25/models/xylynen.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_hotelbooking_25/db/database_helper.dart';
 import 'package:flutter_hotelbooking_25/db/xulylogicdatphong.dart';
@@ -32,6 +33,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (booking == null) {
         throw Exception('Không tìm thấy thông tin đặt phòng');
       }
+      print('SQLite: Dữ liệu booking: $booking'); // Log để debug
+
+      // Kiểm tra và xử lý NgayTraPhong
+      final ngayTraPhongRaw = booking['NgayTraPhong'];
+      if (ngayTraPhongRaw == null) {
+        throw Exception(
+          'Trường NgayTraPhong không tồn tại hoặc là null trong booking',
+        );
+      }
+      final checkOutTime =
+          ngayTraPhongRaw is DateTime
+              ? ngayTraPhongRaw
+              : DateFormat(
+                'yyyy-MM-ddTHH:mm:ss',
+              ).parse(ngayTraPhongRaw as String);
 
       // Cập nhật trạng thái đặt phòng thành 'paid'
       await dbHelper.updateBookingStatus(
@@ -50,11 +66,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
             content: Text('Thanh toán thành công! Phòng đã được đặt.'),
           ),
         );
-        // Navigate to home screen
-        Navigator.pushReplacementNamed(
-          context,
-          '/home', // Route to MainScreen (home)
+
+        // Quay về màn hình chính
+        Navigator.pushReplacementNamed(context, '/home');
+
+        // Lên lịch trả phòng bằng workmanager
+        final autoReleaseTime = checkOutTime.add(const Duration(hours: 1));
+        final timeUntilRelease = autoReleaseTime.difference(DateTime.now());
+        print(
+          "Scheduling release for room $idPhong at $autoReleaseTime with delay: $timeUntilRelease",
         );
+
+        if (timeUntilRelease.isNegative) {
+          // Nếu thời gian đã qua, cập nhật ngay lập tức
+          await dbHelper.updateRoomStatus(idPhong, 1);
+          print("Room $idPhong updated to vacant immediately");
+        } else {
+          scheduleRoomRelease(idPhong, checkOutTime);
+        }
       }
     } catch (e) {
       print('Lỗi khi thanh toán: $e');
