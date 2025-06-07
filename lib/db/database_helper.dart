@@ -59,6 +59,7 @@ class DatabaseHelper {
     Email TEXT UNIQUE NOT NULL,
     MatKhauHash TEXT NOT NULL,
     SoDienThoai TEXT,
+    Role TEXT,
     NgayDangKy TEXT DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW', 'localtime'))
   )
   ''');
@@ -273,6 +274,15 @@ class DatabaseHelper {
       'SoDienThoai': "0123456789",
       'NgayDangKy': DateTime.now().toIso8601String(),
     });
+    await db.insert(tableTaiKhoanNguoiDung, {
+      'HoTen': 'Tran Van B',
+      'Email': 'nguyenvanb@gmail.com',
+      'MatKhauHash': '123456', // Thay bằng hash thực tế (ví dụ: sử dụng bcrypt)
+      'SoDienThoai': '0905123456',
+      'Role': 'NhanVien',
+      'NgayDangKy': DateTime.now().toIso8601String(),
+    });
+
     print('Đã chèn dữ liệu mẫu vào bảng TaiKhoanNguoiDung: ID = $id');
     // Kiểm tra dữ liệu vừa chèn
     final insertedData = await db.query(
@@ -1935,4 +1945,227 @@ class DatabaseHelper {
       whereArgs: [userId],
     );
   }
+
+  //
+  // Hàm nâng cấp database
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE TaiKhoanNguoiDung ADD COLUMN Role TEXT');
+    }
+  }
+
+  // Thêm hoặc cập nhật người dùng
+  Future<int> insertUser(Map<String, dynamic> user) async {
+    final db = await database;
+    return await db.insert(tableTaiKhoanNguoiDung, user);
+  }
+
+  // Lấy thông tin người dùng
+  Future<List<Map<String, dynamic>>> queryUser(
+    String where,
+    List<dynamic> whereArgs,
+  ) async {
+    final db = await database;
+    return await db.query(
+      tableTaiKhoanNguoiDung,
+      where: where,
+      whereArgs: whereArgs,
+    );
+  }
+
+  //Xử lý cho Admin
+
+  Future<int> insert(String table, Map<String, dynamic> values) async {
+    print('Calling insert on table: $table with values: $values');
+    final db = await database;
+    final result = await db.insert(table, values);
+    print('Insert completed with result (new ID): $result');
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> query(
+    String table, {
+    String? where,
+    List<dynamic>? whereArgs,
+    List<String>? columns,
+  }) async {
+    print(
+      'Calling query on table: $table, where: $where, whereArgs: $whereArgs, columns: $columns',
+    );
+    final db = await database;
+    final result = await db.query(
+      table,
+      where: where,
+      whereArgs: whereArgs,
+      columns: columns,
+    );
+    print(
+      'Query completed with result length: ${result.length}, data: $result',
+    );
+    return result;
+  }
+
+  // Lấy thông tin phòng dựa trên IDPhong
+  Future<Map<String, dynamic>?> getRoomById(int idPhong) async {
+    final db = await database;
+    try {
+      final result = await db.query(
+        'Phong',
+        where: 'IDPhong = ?',
+        whereArgs: [idPhong],
+      );
+      print(
+        'SQLite: Lấy phòng IDPhong: $idPhong - Tìm thấy ${result.length} bản ghi',
+      );
+      print('SQLite: Dữ liệu trả về: $result');
+      return result.isNotEmpty ? result.first : null;
+    } catch (e) {
+      print('SQLite: Lỗi khi lấy phòng IDPhong: $idPhong - Lỗi: $e');
+      return null;
+    }
+  }
+
+  // Lấy thông tin loại phòng dựa trên IDLoaiPhong
+  Future<Map<String, dynamic>?> getRoomTypeById(int idLoaiPhong) async {
+    final db = await database;
+    try {
+      final result = await db.query(
+        'LoaiPhong',
+        where: 'IDLoaiPhong = ?',
+        whereArgs: [idLoaiPhong],
+      );
+      print(
+        'SQLite: Lấy loại phòng IDLoaiPhong: $idLoaiPhong - Tìm thấy ${result.length} bản ghi',
+      );
+      print('SQLite: Dữ liệu trả về: $result');
+      return result.isNotEmpty ? result.first : null;
+    } catch (e) {
+      print(
+        'SQLite: Lỗi khi lấy loại phòng IDLoaiPhong: $idLoaiPhong - Lỗi: $e',
+      );
+      return null;
+    }
+  }
+
+  // Lấy thông tin khách sạn dựa trên IDKhachSan
+  Future<Map<String, dynamic>?> getHotelById(int idKhachSan) async {
+    final db = await database;
+    try {
+      final result = await db.query(
+        'KhachSan',
+        where: 'IDKhachSan = ?',
+        whereArgs: [idKhachSan],
+      );
+      print(
+        'SQLite: Lấy khách sạn IDKhachSan: $idKhachSan - Tìm thấy ${result.length} bản ghi',
+      );
+      print('SQLite: Dữ liệu trả về: $result');
+      return result.isNotEmpty ? result.first : null;
+    } catch (e) {
+      print('SQLite: Lỗi khi lấy khách sạn IDKhachSan: $idKhachSan - Lỗi: $e');
+      return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getPendingBookings() async {
+    final db = await database;
+    try {
+      print('SQLite: Kiểm tra kết nối DB: ${await db.isOpen}');
+      final results = await db.query(
+        'DatPhong',
+        where: 'TrangThai = ?',
+        whereArgs: ['paid'],
+      );
+      print(
+        'SQLite: Lấy danh sách đặt phòng pending - Tìm thấy ${results.length} bản ghi',
+      );
+      print('SQLite: Dữ liệu trả về: $results');
+      return results;
+    } catch (e) {
+      print('SQLite: Lỗi khi lấy danh sách đặt phòng pending - Lỗi: $e');
+      return [];
+    }
+  }
+  // Future<List<Map<String, dynamic>>> rawQuery(
+  //   String sql, [
+  //   List<dynamic>? arguments,
+  // ]) async {
+  //   print('Calling rawQuery with SQL: $sql, arguments: $arguments');
+  //   final db = await database;
+  //   final result = await db.rawQuery(sql, arguments);
+  //   print(
+  //     'RawQuery completed with result length: ${result.length}, data: $result',
+  //   );
+  //   return result;
+  // }
+
+  // Future<int> update(
+  //   String table,
+  //   Map<String, dynamic> values, {
+  //   String? where,
+  //   List<dynamic>? whereArgs,
+  // }) async {
+  //   print(
+  //     'Calling update on table: $table with values: $values, where: $where, whereArgs: $whereArgs',
+  //   );
+  //   final db = await database;
+  //   final result = await db.update(
+  //     table,
+  //     values,
+  //     where: where,
+  //     whereArgs: whereArgs,
+  //   );
+  //   print('Update completed with result: $result');
+  //   return result;
+  // }
+  // Lấy danh sách đặt phòng hết hạn trong ngày hôm nay
+  Future<List<Map<String, dynamic>>> getExpiredBookingsToday() async {
+    final db = await database;
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = startOfDay
+        .add(const Duration(days: 1))
+        .subtract(const Duration(milliseconds: 1));
+
+    try {
+      final results = await db.query(
+        'DatPhong',
+        where: 'NgayTraPhong BETWEEN ? AND ? AND TrangThai = ?',
+        whereArgs: [
+          startOfDay.toIso8601String(),
+          endOfDay.toIso8601String(),
+          'confirmed', // Chỉ lấy các đặt phòng đã xác nhận
+        ],
+      );
+      print(
+        'SQLite: Lấy danh sách đặt phòng hết hạn hôm nay - Tìm thấy ${results.length} bản ghi',
+      );
+      print('SQLite: Dữ liệu trả về: $results');
+      return results;
+    } catch (e) {
+      print('SQLite: Lỗi khi lấy danh sách đặt phòng hết hạn - Lỗi: $e');
+      return [];
+    }
+  }
+
+  // // Cập nhật trạng thái phòng thành trống
+  // Future<void> updateRoomStatus(int idPhong, int dangTrong) async {
+  //   final db = await database;
+  //   try {
+  //     await db.update(
+  //       'Phong',
+  //       {'DangTrong': dangTrong},
+  //       where: 'IDPhong = ?',
+  //       whereArgs: [idPhong],
+  //     );
+  //     print(
+  //       'SQLite: Cập nhật trạng thái phòng IDPhong: $idPhong thành DangTrong: $dangTrong',
+  //     );
+  //   } catch (e) {
+  //     print(
+  //       'SQLite: Lỗi khi cập nhật trạng thái phòng IDPhong: $idPhong - Lỗi: $e',
+  //     );
+  //     throw e;
+  //   }
+  // }
 }

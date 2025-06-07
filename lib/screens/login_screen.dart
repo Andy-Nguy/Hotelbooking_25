@@ -57,106 +57,49 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    // Ẩn bàn phím trước khi xử lý
-    FocusScope.of(context).unfocus();
-
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
-
     try {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
-      if (email.isEmpty || password.isEmpty) {
-        throw Exception('Email và mật khẩu không được để trống.');
-      }
-
       final dbHelper = DatabaseHelper.instance;
-      final user = await dbHelper.loginUser(email, password);
-
-      if (user != null) {
-        final idNguoiDung = user['IDNguoiDung'];
-        if (idNguoiDung is! int) {
-          throw Exception('IDNguoiDung không hợp lệ: $idNguoiDung');
-        }
-
+      final users = await dbHelper.queryUser(
+        'Email = ? AND MatKhauHash = ?', // Thay bằng logic hash thực tế
+        [
+          _emailController.text,
+          _passwordController.text,
+        ], // Giả sử mật khẩu chưa hash
+      );
+      if (users.isNotEmpty) {
+        final user = users.first;
+        final role = user['Role']; // Lấy Role từ database
+        final effectiveRole =
+            role ?? 'KhachHang'; // Nếu Role là NULL, coi là KhachHang
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('idNguoiDung', idNguoiDung);
-        if (mounted) {
-          setState(() {
-            _isLoggedIn = true;
-            _userInfo = user;
-            _isLoading = false;
-          });
-          await Future.delayed(
-            const Duration(milliseconds: 100),
-          ); // Đợi render giao diện
-          if (mounted) {
-            if (widget.fromBooking &&
-                widget.idLoaiPhong != null &&
-                widget.roomType != null) {
-              // Quay lại BookingScreen với thông tin
-              print(
-                '✅ Đăng nhập thành công từ Booking - User: ${user['HoTen']} (ID: $idNguoiDung)',
-              );
-              Navigator.pop(context, {
-                'success': true,
-                'idLoaiPhong': widget.idLoaiPhong,
-                'roomType': widget.roomType,
-              });
-            } else {
-              // Chuyển hướng đến Home Screen
-              print(
-                '✅ Đăng nhập thành công - User: ${user['HoTen']} (ID: $idNguoiDung)',
-              );
-              print('🏠 Chuyển hướng về Home Screen');
-
-              // Hiển thị SnackBar thông báo đăng nhập thành công
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text('Chào mừng ${user['HoTen']}!'),
-                    ],
-                  ),
-                  backgroundColor: successGreen,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-
-              // Delay nhỏ để SnackBar hiển thị trước khi chuyển trang
-              await Future.delayed(const Duration(milliseconds: 300));
-              Navigator.pushReplacementNamed(context, '/home');
-            }
-          }
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _errorMessage = 'Email hoặc mật khẩu không đúng.';
-            _isLoading = false;
-          });
-        }
-      }
-    } catch (e) {
-      print('Lỗi trong _login: $e');
-      if (mounted) {
+        await prefs.setInt('idNguoiDung', user['IDNguoiDung']);
+        await prefs.setString('role', effectiveRole); // Lưu vai trò hiệu quả
         setState(() {
-          _errorMessage = 'Đã xảy ra lỗi: $e';
           _isLoading = false;
         });
+        Navigator.pop(context, {'success': true});
+        // Chuyển hướng dựa trên vai trò
+        if (effectiveRole == 'NhanVien' || effectiveRole == 'QuanTri') {
+          Navigator.pushNamed(context, '/admin');
+        }
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Email hoặc mật khẩu không đúng.')),
+        );
       }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đã xảy ra lỗi khi đăng nhập.')),
+      );
     }
   }
 

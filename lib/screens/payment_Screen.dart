@@ -33,7 +33,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (booking == null) {
         throw Exception('Không tìm thấy thông tin đặt phòng');
       }
-      print('SQLite: Dữ liệu booking: $booking'); // Log để debug
+      print('SQLite: Dữ liệu booking: $booking');
 
       // Kiểm tra và xử lý NgayTraPhong
       final ngayTraPhongRaw = booking['NgayTraPhong'];
@@ -60,6 +60,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
       final idPhong = booking['IDPhong'] as int;
       await dbHelper.updateRoomStatus(idPhong, 0);
 
+      // In toàn bộ dữ liệu bảng DatPhong sau khi thanh toán
+      final allBookings = await dbHelper.getAllBookingsDetailed();
+      for (var booking in allBookings) {
+        print('SQLite: Bản ghi DatPhong sau thanh toán: $booking');
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -70,7 +76,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         // Quay về màn hình chính
         Navigator.pushReplacementNamed(context, '/home');
 
-        // Lên lịch trả phòng bằng workmanager
+        // Lên lịch trả phòng
         final autoReleaseTime = checkOutTime.add(const Duration(hours: 1));
         final timeUntilRelease = autoReleaseTime.difference(DateTime.now());
         print(
@@ -78,11 +84,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
         );
 
         if (timeUntilRelease.isNegative) {
-          // Nếu thời gian đã qua, cập nhật ngay lập tức
           await dbHelper.updateRoomStatus(idPhong, 1);
           print("Room $idPhong updated to vacant immediately");
         } else {
           scheduleRoomRelease(idPhong, checkOutTime);
+          print("Đã gọi scheduleRoomRelease cho phòng $idPhong");
         }
       }
     } catch (e) {
