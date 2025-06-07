@@ -1526,49 +1526,37 @@ class DatabaseHelper {
 
   Future<Map<String, dynamic>?> getFullHotelDetails(int hotelId) async {
     final db = await database;
-    final List<Map<String, dynamic>> hotelInfoList = await db.query(
-      tableKhachSan,
+    final hotel = await db.query(
+      'KhachSan',
+      where: 'IDKhachSan = ?',
+      whereArgs: [hotelId],
+      limit: 1,
+    );
+
+    if (hotel.isEmpty) return null;
+
+    final hotelData = hotel.first;
+    final roomTypes = await db.query(
+      'LoaiPhong',
       where: 'IDKhachSan = ?',
       whereArgs: [hotelId],
     );
-    if (hotelInfoList.isEmpty) {
-      print(
-        "SQLite: Không tìm thấy khách sạn với ID: $hotelId trong getFullHotelDetails",
+
+    final List<Map<String, dynamic>> detailedRoomTypes = [];
+    for (var roomType in roomTypes) {
+      final rooms = await db.query(
+        'Phong',
+        where: 'IDKhachSan = ? AND IDLoaiPhong = ?',
+        whereArgs: [hotelId, roomType['IDLoaiPhong']],
       );
-      return null;
+      detailedRoomTypes.add({...roomType, 'rooms_specific': rooms});
     }
-    Map<String, dynamic> hotelData = Map<String, dynamic>.from(
-      hotelInfoList.first,
-    );
-    print("SQLite: Thông tin khách sạn ID $hotelId: $hotelData");
 
-    hotelData['gallery'] = await getAnhKhachSan(hotelId);
-    hotelData['amenities'] = await getTienNghiKhachSan(hotelId);
-
-    List<Map<String, dynamic>> roomTypesRaw = await getLoaiPhongByKhachSan(
-      hotelId,
-    );
-    List<Map<String, dynamic>> roomTypesDetailed = [];
-    for (var rtRaw in roomTypesRaw) {
-      Map<String, dynamic> roomTypeData = Map<String, dynamic>.from(rtRaw);
-      int roomTypeId = roomTypeData['IDLoaiPhong'] as int;
-
-      roomTypeData['gallery'] = await getAnhLoaiPhong(roomTypeId);
-      roomTypeData['amenities'] = await getTienNghiLoaiPhong(roomTypeId);
-      roomTypeData['rooms_specific'] = await getPhongByLoaiPhong(roomTypeId);
-
-      roomTypesDetailed.add(roomTypeData);
-    }
-    hotelData['room_types'] = roomTypesDetailed;
-    print(
-      "SQLite: Loại phòng chi tiết cho ID $hotelId: ${hotelData['room_types']}",
-    );
-
-    hotelData['reviews'] = [];
-    print(
-      "SQLite: Lấy chi tiết khách sạn ID $hotelId - Thành công. Dữ liệu đầy đủ: $hotelData",
-    );
-    return hotelData;
+    return {
+      ...hotelData,
+      'room_types': detailedRoomTypes,
+      // Thêm các trường khác như gallery, amenities nếu cần
+    };
   }
 
   Future<int> countTableRecords(String tableName) async {

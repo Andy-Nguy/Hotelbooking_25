@@ -11,6 +11,30 @@ class BookingDetailScreen extends StatefulWidget {
 
 class _BookingDetailScreenState extends State<BookingDetailScreen> {
   bool _isLoading = false;
+  int availableRoomsCount = 0;
+
+  Future<void> fetchRoomAvailability() async {
+    final db = await DatabaseHelper.instance.database;
+    print('Bắt đầu fetchRoomAvailability');
+    final rooms = await db.query('Phong'); // Lấy tất cả phòng để debug
+    print('Danh sách tất cả phòng: $rooms');
+    final availableRooms = await db.query(
+      'Phong',
+      where: 'DangTrong = ?',
+      whereArgs: [1],
+    );
+    print('Số phòng trống lấy được: ${availableRooms.length}');
+    setState(() {
+      availableRoomsCount = availableRooms.length;
+      print('Số lượng phòng trống sau setState: $availableRoomsCount');
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRoomAvailability(); // Lấy số lượng phòng ban đầu
+  }
 
   Future<void> _confirmBooking(int idDatPhong) async {
     setState(() {
@@ -19,7 +43,25 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
 
     try {
       final dbHelper = DatabaseHelper.instance;
+      // Lấy thông tin đặt phòng để lấy IDPhong
+      final booking = await dbHelper.getBookingById(idDatPhong);
+      if (booking == null) {
+        throw Exception('Không tìm thấy thông tin đặt phòng');
+      }
+
+      // Cập nhật trạng thái đặt phòng
       await dbHelper.updateBookingStatus(idDatPhong, 'confirmed', null);
+
+      // Cập nhật trạng thái phòng
+      final idPhong = booking['IDPhong'] as int;
+      await dbHelper.updateRoomStatus(
+        idPhong,
+        0,
+      ); // Đặt phòng thành không trống
+
+      // Làm mới số lượng phòng trống
+      await fetchRoomAvailability();
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Xác nhận đặt phòng thành công!')),
@@ -162,6 +204,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
+            const SizedBox(height: 16),
+            Text(
+              'Số lượng phòng trống: $availableRoomsCount', // Hiển thị số lượng phòng
+              style: textTheme.bodyMedium,
+            ),
             if (arguments['amenities'] != null &&
                 (arguments['amenities'] as List).isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -284,11 +331,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       ),
       child: ElevatedButton(
         onPressed: () {
+          print('Nút Thanh toán và xác nhận được nhấn');
           Navigator.pushNamed(
             context,
             '/payment',
             arguments: arguments, // Truyền dữ liệu đặt phòng
           ).then((result) {
+            print('Kết quả từ PaymentScreen: $result');
             if (result == true) {
               // Xử lý khi thanh toán thành công
               _confirmBooking(arguments['idDatPhong'] as int);

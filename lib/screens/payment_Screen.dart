@@ -50,7 +50,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
             content: Text('Thanh toán thành công! Phòng đã được đặt.'),
           ),
         );
-        Navigator.pop(context, true); // Trả về kết quả thành công
+        // Navigate to home screen
+        Navigator.pushReplacementNamed(
+          context,
+          '/home', // Route to MainScreen (home)
+        );
       }
     } catch (e) {
       print('Lỗi khi thanh toán: $e');
