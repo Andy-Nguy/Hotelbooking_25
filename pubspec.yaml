@@ -37,11 +37,12 @@ dependencies:
   cupertino_icons: ^1.0.8
   sqflite: ^2.3.0 # Kiểm tra phiên bản mới nhất
   path_provider: ^2.0.11 # Để lấy đường dẫn lưu database
-  intl: ^0.18.1 # Để định dạng ngày tháng (tùy chọn)
+  intl: ^0.17.0 # Để định dạng ngày tháng (tùy chọn)
   shared_preferences: ^2.2.2
   crypto: ^3.0.6
   workmanager: ^0.6.0
   qr_flutter: ^4.1.0
+  mailer: ^6.4.1
 
 dev_dependencies:
   flutter_test:

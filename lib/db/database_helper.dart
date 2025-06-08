@@ -268,8 +268,8 @@ class DatabaseHelper {
     // --- TaiKhoanNguoiDung ---/
     // Chèn dữ liệu mẫu vào bảng TaiKhoanNguoiDung và lấy ID vừa chèn
     int id = await db.insert(tableTaiKhoanNguoiDung, {
-      "HoTen": "Nguyen Van A",
-      'Email': "nguyenvana@gmail.com",
+      "HoTen": "Nguyễn Tô Duy Anh",
+      'Email': "duyanh05012004@gmail.com",
       'MatKhauHash': "123456",
       'SoDienThoai': "0123456789",
       'NgayDangKy': DateTime.now().toIso8601String(),
@@ -1890,6 +1890,7 @@ class DatabaseHelper {
       
       nguoidung.HoTen AS TenNguoiDung,
       nguoidung.Email,
+      nguoidung.SoDienThoai AS SoDienThoaiNguoiDung,
       
       phong.IDPhong,
       phong.SoPhong,
@@ -1982,6 +1983,7 @@ class DatabaseHelper {
     print('Insert completed with result (new ID): $result');
     return result;
   }
+  //xet duyet phong
 
   Future<List<Map<String, dynamic>>> query(
     String table, {
@@ -2067,25 +2069,45 @@ class DatabaseHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getPendingBookings() async {
+  Future<List<Map<String, dynamic>>> getPaidBookings() async {
     final db = await database;
     try {
-      print('SQLite: Kiểm tra kết nối DB: ${await db.isOpen}');
-      final results = await db.query(
-        'DatPhong',
-        where: 'TrangThai = ?',
-        whereArgs: ['paid'],
-      );
+      final results = await db.rawQuery('''
+      SELECT 
+        dp.IDDatPhong,
+        dp.IDNguoiDung,
+        dp.IDPhong,
+        dp.NgayNhanPhong,
+        dp.NgayTraPhong,
+        dp.SoDem,
+        dp.GiaMoiDemKhiDat,
+        dp.TongTien,
+        dp.NgayDatPhong,
+        dp.TrangThai,
+        dp.YeuCauDacBiet,
+        dp.MaGiaoDich,
+        u.HoTen,
+        u.Email,
+        u.SoDienThoai,           -- Thêm trường số điện thoại người dùng
+        p.SoPhong,               -- Thêm trường số phòng
+        lp.TenLoaiPhong
+      FROM DatPhong dp
+      LEFT JOIN TaiKhoanNguoiDung u ON dp.IDNguoiDung = u.IDNguoiDung
+      LEFT JOIN Phong p ON dp.IDPhong = p.IDPhong
+      LEFT JOIN LoaiPhong lp ON p.IDLoaiPhong = lp.IDLoaiPhong
+      WHERE dp.TrangThai = 'paid'
+    ''');
       print(
-        'SQLite: Lấy danh sách đặt phòng pending - Tìm thấy ${results.length} bản ghi',
+        'SQLite: Lấy danh sách đặt phòng đã thanh toán - Tìm thấy ${results.length} bản ghi',
       );
       print('SQLite: Dữ liệu trả về: $results');
       return results;
     } catch (e) {
-      print('SQLite: Lỗi khi lấy danh sách đặt phòng pending - Lỗi: $e');
+      print('SQLite: Lỗi khi lấy danh sách đặt phòng đã thanh toán - Lỗi: $e');
       return [];
     }
   }
+
   // Future<List<Map<String, dynamic>>> rawQuery(
   //   String sql, [
   //   List<dynamic>? arguments,

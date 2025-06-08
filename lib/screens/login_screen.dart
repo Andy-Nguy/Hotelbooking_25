@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
-  bool _isLoggedIn = false;
+  bool _isLoggedIn = false; // Ban đầu không đăng nhập
   Map<String, dynamic>? _userInfo;
 
   // Color scheme based on the provided palette
@@ -38,23 +38,25 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
+    // Không kiểm tra tự động đăng nhập khi khởi chạy
+    // _checkLoginStatus(); // Comment hoặc xóa để tránh tự động đăng nhập
   }
 
-  Future<void> _checkLoginStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final idNguoiDung = prefs.getInt('idNguoiDung');
-    if (idNguoiDung != null) {
-      final dbHelper = DatabaseHelper.instance;
-      final user = await dbHelper.getUserById(idNguoiDung);
-      if (user != null && mounted) {
-        setState(() {
-          _isLoggedIn = true;
-          _userInfo = user;
-        });
-      }
-    }
-  }
+  // Loại bỏ hoặc vô hiệu hóa _checkLoginStatus() để tránh tự động đăng nhập
+  // Future<void> _checkLoginStatus() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final idNguoiDung = prefs.getInt('idNguoiDung');
+  //   if (idNguoiDung != null) {
+  //     final dbHelper = DatabaseHelper.instance;
+  //     final user = await dbHelper.getUserById(idNguoiDung);
+  //     if (user != null && mounted) {
+  //       setState(() {
+  //         _isLoggedIn = true;
+  //         _userInfo = user;
+  //       });
+  //     }
+  //   }
+  // }
 
   Future<void> _login() async {
     setState(() {
@@ -79,11 +81,25 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('role', effectiveRole); // Lưu vai trò hiệu quả
         setState(() {
           _isLoading = false;
+          _isLoggedIn = true;
+          _userInfo = user;
         });
-        Navigator.pop(context, {'success': true});
         // Chuyển hướng dựa trên vai trò
         if (effectiveRole == 'NhanVien' || effectiveRole == 'QuanTri') {
           Navigator.pushNamed(context, '/admin');
+        } else if (widget.fromBooking &&
+            widget.idLoaiPhong != null &&
+            widget.roomType != null) {
+          Navigator.pushNamed(
+            context,
+            '/booking',
+            arguments: {
+              'idLoaiPhong': widget.idLoaiPhong,
+              'roomType': widget.roomType,
+            },
+          );
+        } else {
+          Navigator.pushNamed(context, '/home');
         }
       } else {
         setState(() {
@@ -106,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('idNguoiDung');
+    await prefs.remove('role'); // Xóa vai trò khi đăng xuất
     if (mounted) {
       setState(() {
         _isLoggedIn = false;
