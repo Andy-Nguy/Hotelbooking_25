@@ -1949,7 +1949,7 @@ class DatabaseHelper {
 
   //
   // Hàm nâng cấp database
-  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+  Future upgradeDB(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await db.execute('ALTER TABLE TaiKhoanNguoiDung ADD COLUMN Role TEXT');
     }
@@ -2150,19 +2150,50 @@ class DatabaseHelper {
         .subtract(const Duration(milliseconds: 1));
 
     try {
-      final results = await db.query(
-        'DatPhong',
-        where: 'NgayTraPhong BETWEEN ? AND ? AND TrangThai = ?',
-        whereArgs: [
-          startOfDay.toIso8601String(),
-          endOfDay.toIso8601String(),
-          'confirmed', // Chỉ lấy các đặt phòng đã xác nhận
-        ],
+      // Sử dụng rawQuery với JOIN để lấy thông tin từ DatPhong, Phong, KhachSan, và NguoiDung
+      final results = await db.rawQuery(
+        """
+      SELECT 
+        dp.IDDatPhong,
+        dp.NgayNhanPhong,
+        dp.NgayTraPhong,
+        dp.SoDem,
+        dp.GiaMoiDemKhiDat,
+        dp.TongTien,
+        dp.TrangThai,
+        p.IDPhong,
+        p.SoPhong,
+        p.DangTrong,
+        ks.IDKhachSan,
+        ks.TenKhachSan,
+        ks.DiaChi,
+        nd.IDNguoiDung,
+        nd.HoTen AS TenNguoiDat,
+        nd.SoDienThoai AS SoDienThoaiNguoiDat,
+        nd.Email AS EmailNguoiDat
+      FROM DatPhong dp
+      INNER JOIN Phong p ON dp.IDPhong = p.IDPhong
+      INNER JOIN KhachSan ks ON p.IDKhachSan = ks.IDKhachSan
+      INNER JOIN TaiKhoanNguoiDung nd ON dp.IDNguoiDung = nd.IDNguoiDung
+      WHERE dp.NgayTraPhong BETWEEN ? AND ? AND dp.TrangThai = ?
+    """,
+        [startOfDay.toIso8601String(), endOfDay.toIso8601String(), 'confirmed'],
       );
+
+      // Log chi tiết kết quả
       print(
         'SQLite: Lấy danh sách đặt phòng hết hạn hôm nay - Tìm thấy ${results.length} bản ghi',
       );
-      print('SQLite: Dữ liệu trả về: $results');
+      for (var result in results) {
+        print(
+          'SQLite: Dữ liệu đặt phòng hết hạn - IDDatPhong: ${result['IDDatPhong']}, '
+          'Phòng: ${result['SoPhong']}, Khách sạn: ${result['TenKhachSan']}, '
+          'Trạng thái phòng: ${result['DangTrong'] == 1 ? 'Trống' : 'Đang thuê'}, '
+          'Người đặt: ${result['TenNguoiDat']} (${result['EmailNguoiDat']}), '
+          'NgayTraPhong: ${result['NgayTraPhong']}',
+        );
+      }
+
       return results;
     } catch (e) {
       print('SQLite: Lỗi khi lấy danh sách đặt phòng hết hạn - Lỗi: $e');
