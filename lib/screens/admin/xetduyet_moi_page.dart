@@ -144,7 +144,10 @@ class _XetDuyetMoiScreenState extends State<XetDuyetMoiScreen> {
       );
       final message =
           Message()
-            ..from = Address('your_email@gmail.com', 'Hotel Booking Admin')
+            ..from = Address(
+              'nguyenhoang26042004@gmail.com',
+              'Hotel Booking Admin',
+            )
             ..recipients.add(email)
             ..subject =
                 'Xác nhận đặt phòng đã thanh toán - Mã đặt phòng #$idDatPhong'
@@ -170,7 +173,10 @@ class _XetDuyetMoiScreenState extends State<XetDuyetMoiScreen> {
       );
       final message =
           Message()
-            ..from = Address('your_email@gmail.com', 'Hotel Booking Admin')
+            ..from = Address(
+              'nguyenhoang26042004@gmail.com',
+              'Hotel Booking Admin',
+            )
             ..recipients.add(email)
             ..subject = 'Thông báo hủy đặt phòng - Mã đặt phòng #$idDatPhong'
             ..text =
