@@ -145,15 +145,123 @@ class _XetDuyetMoiScreenState extends State<XetDuyetMoiScreen> {
       final message =
           Message()
             ..from = Address(
-              'nguyenhoang26042004@gmail.com',
-              'Hotel Booking Admin',
+              'booking@hotelmanagement.com', // Email chuyên nghiệp hơn
+              'Khách sạn JW MARRIOT - Bộ phận Đặt phòng',
             )
             ..recipients.add(email)
             ..subject =
-                'Xác nhận đặt phòng đã thanh toán - Mã đặt phòng #$idDatPhong'
-            ..text =
-                'Chào bạn,\n\nĐặt phòng của bạn với mã #$idDatPhong đã được xác nhận. Chi tiết:\n- Ngày nhận: ${DateTime.now().toIso8601String()}\n- Ngày trả: ${DateTime.now().add(const Duration(days: 1)).toIso8601String()}\nCảm ơn bạn!\n\nTrân trọng,\nĐội ngũ Hotel Booking';
+                'Xác nhận đặt phòng thành công - Mã đặt phòng #$idDatPhong'
+            ..html = '''
+    <html>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">Xác nhận đặt phòng</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Cảm ơn quý khách đã tin tưởng lựa chọn dịch vụ của chúng tôi</p>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e9ecef;">
+          <h2 style="color: #2c3e50; margin-top: 0;">Kính chào quý khách,</h2>
+          
+          <p style="font-size: 16px; margin-bottom: 20px;">
+            Chúng tôi vui mừng thông báo rằng đặt phòng của quý khách đã được <strong>xác nhận thành công</strong> và thanh toán đã được xử lý.
+          </p>
+          
+          <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: 25px 0;">
+            <h3 style="color: #667eea; margin-top: 0; border-bottom: 2px solid #667eea; padding-bottom: 10px;">
+              📋 Thông tin đặt phòng
+            </h3>
+            
+            <div style="display: grid; gap: 15px;">
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                <span style="font-weight: bold; color: #555;">Mã đặt phòng:</span>
+                <span style="color: #667eea; font-weight: bold; font-size: 18px;">#$idDatPhong</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                <span style="font-weight: bold; color: #555;">📅 Ngày nhận phòng:</span>
+                <span>${DateFormat('dd/MM/yyyy - HH:mm').format(DateTime.now())}</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                <span style="font-weight: bold; color: #555;">📅 Ngày trả phòng:</span>
+                <span>${DateFormat('dd/MM/yyyy - HH:mm').format(DateTime.now().add(const Duration(days: 1)))}</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                <span style="font-weight: bold; color: #555;">✅ Trạng thái:</span>
+                <span style="background: #28a745; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px;">Đã xác nhận</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="background: #e8f4f8; padding: 20px; border-radius: 8px; border-left: 4px solid #17a2b8; margin: 25px 0;">
+            <h4 style="color: #17a2b8; margin-top: 0;">📢 Lưu ý quan trọng:</h4>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>Vui lòng mang theo giấy tờ tùy thân khi nhận phòng</li>
+              <li>Thời gian nhận phòng: 14:00 - 22:00</li>
+              <li>Thời gian trả phòng: 06:00 - 12:00</li>
+              <li>Liên hệ lễ tân: <strong>1900-1099</strong> nếu cần hỗ trợ</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="font-size: 16px; color: #666; margin-bottom: 20px;">
+              Cảm ơn quý khách đã lựa chọn dịch vụ của chúng tôi. Chúng tôi mong được phục vụ quý khách!
+            </p>
+            
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0; font-weight: bold;">Chúc quý khách có một kỳ nghỉ tuyệt vời! 🌟</p>
+            </div>
+          </div>
+          
+          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+          
+          <div style="text-align: center; color: #666; font-size: 14px;">
+            <p style="margin: 5px 0;"><strong> Hệ Thống Khách sạn JW MARRIOT</strong></p>
+            <p style="margin: 5px 0;">📍 Corner Hai Ba Trung St & Le Duan Blvd Ben Nghe Ward, Quận 1, Hồ Chí Minh,</p>
+            <p style="margin: 5px 0;">📍 No 8 Do Duc Duc Road ME Tri, Nam Từ Liêm, Hà Nội </p>
+            <p style="margin: 5px 0;">📍 Khem Beach, An Thới, Phú Quốc, Kiên Giang </p>
+            <p style="margin: 5px 0;">📞 Hotline: 1900-1099 | 📧 Email: booking@hotelmanagement.com</p>
+            <p style="margin: 15px 0 5px 0; font-size: 12px; color: #999;">
+              Email này được gửi tự động, vui lòng không trả lời trực tiếp.
+            </p>
+          </div>
+        </div>
+      </body>
+    </html>
+  '''
+            ..text = '''
+Kính chào quý khách,
 
+Chúng tôi vui mừng thông báo rằng đặt phòng của quý khách đã được XÁC NHẬN THÀNH CÔNG và thanh toán đã được xử lý.
+
+THÔNG TIN ĐẶT PHÒNG:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Mã đặt phòng: #$idDatPhong
+• Ngày nhận phòng: ${DateFormat('dd/MM/yyyy - HH:mm').format(DateTime.now())}
+• Ngày trả phòng: ${DateFormat('dd/MM/yyyy - HH:mm').format(DateTime.now().add(const Duration(days: 1)))}
+• Trạng thái: ✅ Đã xác nhận
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LƯU Ý QUAN TRỌNG:
+• Vui lòng mang theo giấy tờ tùy thân khi nhận phòng
+• Thời gian nhận phòng: 14:00 - 22:00
+• Thời gian trả phòng: 06:00 - 12:00
+• Liên hệ lễ tân: 1900-xxxx nếu cần hỗ trợ
+
+Cảm ơn quý khách đã lựa chọn dịch vụ của chúng tôi. Chúng tôi mong được phục vụ quý khách!
+
+Chúc quý khách có một kỳ nghỉ tuyệt vời! 🌟
+
+Trân trọng,
+Khách sạn ABC - Bộ phận Đặt phòng
+📍 123 Đường ABC, Quận 1, TP.HCM
+📞 Hotline: 1900-xxxx
+📧 Email: booking@hotelmanagement.com
+
+---
+Email này được gửi tự động, vui lòng không trả lời trực tiếp.
+  ''';
       final sendReport = await send(message, smtpServer);
       print('Email gửi thành công đến $email: $sendReport');
     } catch (e) {
