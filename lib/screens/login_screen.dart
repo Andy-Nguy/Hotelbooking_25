@@ -38,25 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // Không kiểm tra tự động đăng nhập khi khởi chạy
-    // _checkLoginStatus(); // Comment hoặc xóa để tránh tự động đăng nhập
   }
-
-  // Loại bỏ hoặc vô hiệu hóa _checkLoginStatus() để tránh tự động đăng nhập
-  // Future<void> _checkLoginStatus() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final idNguoiDung = prefs.getInt('idNguoiDung');
-  //   if (idNguoiDung != null) {
-  //     final dbHelper = DatabaseHelper.instance;
-  //     final user = await dbHelper.getUserById(idNguoiDung);
-  //     if (user != null && mounted) {
-  //       setState(() {
-  //         _isLoggedIn = true;
-  //         _userInfo = user;
-  //       });
-  //     }
-  //   }
-  // }
 
   Future<void> _login() async {
     setState(() {
@@ -337,6 +319,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+          ),
+          const SizedBox(height: 16),
+
+          // Register Button
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/register');
+            },
+            child: const Text(
+              'Chưa có tài khoản? Đăng ký ngay',
+              style: TextStyle(
+                color: primaryBlue,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),

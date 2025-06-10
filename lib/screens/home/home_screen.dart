@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hotelbooking_25/db/database_helper.dart';
 import 'package:flutter_hotelbooking_25/screens/hotel_details_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_hotelbooking_25/screens/map/map_widget.dart';
 
 // --- BenefitItem Widget ---
 class BenefitItem extends StatelessWidget {
@@ -638,6 +639,33 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
+                ),
+              ],
+            ),
+          ),
+          // Map Section
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Vị trí các chi nhánh JW Marriott',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 10.0),
+                SizedBox(
+                  height: 300.0,
+                  child: MapWidget(), // Thêm widget bản đồ
+                ),
+                const Text(
+                  '© OpenStreetMap contributors',
+                  style: TextStyle(fontSize: 12.0, color: Colors.black54),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),

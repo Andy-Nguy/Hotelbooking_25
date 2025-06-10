@@ -8,7 +8,9 @@ import 'package:flutter_hotelbooking_25/screens/login_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/main_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/user/UserProfile_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/payment_Screen.dart';
+import 'package:flutter_hotelbooking_25/screens/user/register_screen.dart';
 import 'package:workmanager/workmanager.dart';
+import 'package:flutter_hotelbooking_25/screens/service_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/admin/admin_screen.dart';
 
 void main() async {
@@ -50,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/user_profile': (context) => const UserProfileScreen(),
         '/booking_detail': (context) => const BookingDetailScreen(),
         '/payment': (context) => const PaymentScreen(),
+        '/register': (context) => const RegisterScreen(),
         '/hotel_details':
             (context) => const HotelDetailsScreen(
               hotelId: 1,
