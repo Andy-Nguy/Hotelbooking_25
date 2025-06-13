@@ -1545,29 +1545,97 @@ class DatabaseHelper {
       limit: 1,
     );
 
-    if (hotel.isEmpty) return null;
+    if (hotel.isEmpty) {
+      print(
+        'DatabaseHelper: Không tìm thấy khách sạn với IDKhachSan = $hotelId',
+      );
+      return null;
+    }
 
-    final hotelData = hotel.first;
+    final hotelData = Map<String, dynamic>.from(hotel.first);
+    print('DatabaseHelper: Hotel data: $hotelData');
+
+    // Lấy danh sách loại phòng
     final roomTypes = await db.query(
       'LoaiPhong',
       where: 'IDKhachSan = ?',
       whereArgs: [hotelId],
     );
+    print('DatabaseHelper: Room types: $roomTypes');
 
     final List<Map<String, dynamic>> detailedRoomTypes = [];
     for (var roomType in roomTypes) {
+      // Lấy phòng cụ thể
       final rooms = await db.query(
         'Phong',
         where: 'IDKhachSan = ? AND IDLoaiPhong = ?',
         whereArgs: [hotelId, roomType['IDLoaiPhong']],
       );
-      detailedRoomTypes.add({...roomType, 'rooms_specific': rooms});
+      print(
+        'DatabaseHelper: Rooms for IDLoaiPhong ${roomType['IDLoaiPhong']}: $rooms',
+      );
+
+      // Lấy gallery của loại phòng
+      final gallery = await db.query(
+        'AnhLoaiPhong',
+        where: 'IDLoaiPhong = ?',
+        whereArgs: [roomType['IDLoaiPhong']],
+      );
+      final galleryList =
+          gallery.map((img) => {'UrlAnh': img['UrlAnh']}).toList();
+      print(
+        'DatabaseHelper: Gallery for IDLoaiPhong ${roomType['IDLoaiPhong']}: $galleryList',
+      );
+
+      // Lấy tiện nghi của loại phòng
+      final amenities = await db.rawQuery(
+        '''
+      SELECT t.IDTienNghi, t.TenTienNghi, t.TenIcon
+      FROM TienNghiLoaiPhong tnlp
+      JOIN TienNghi t ON tnlp.IDTienNghi = t.IDTienNghi
+      WHERE tnlp.IDLoaiPhong = ?
+    ''',
+        [roomType['IDLoaiPhong']],
+      );
+      print(
+        'DatabaseHelper: Amenities for IDLoaiPhong ${roomType['IDLoaiPhong']}: $amenities',
+      );
+
+      detailedRoomTypes.add({
+        ...roomType,
+        'rooms_specific': rooms,
+        'gallery': galleryList,
+        'amenities': amenities,
+      });
     }
+
+    // Lấy gallery của khách sạn
+    final hotelGallery = await db.query(
+      'AnhKhachSan',
+      where: 'IDKhachSan = ?',
+      whereArgs: [hotelId],
+    );
+    final hotelGalleryList =
+        hotelGallery.map((img) => {'UrlAnh': img['UrlAnh']}).toList();
+    print('DatabaseHelper: Hotel gallery: $hotelGalleryList');
+
+    // Lấy tiện nghi của khách sạn
+    final hotelAmenities = await db.rawQuery(
+      '''
+    SELECT t.IDTienNghi, t.TenTienNghi, t.TenIcon
+    FROM TienNghiKhachSan tnk
+    JOIN TienNghi t ON tnk.IDTienNghi = t.IDTienNghi
+    WHERE tnk.IDKhachSan = ?
+  ''',
+      [hotelId],
+    );
+    print('DatabaseHelper: Hotel amenities: $hotelAmenities');
 
     return {
       ...hotelData,
       'room_types': detailedRoomTypes,
-      // Thêm các trường khác như gallery, amenities nếu cần
+      'gallery': hotelGalleryList,
+      'amenities': hotelAmenities,
     };
   }
 
@@ -2221,4 +2289,42 @@ class DatabaseHelper {
   //     throw e;
   //   }
   // }
+
+  Future<List<Map<String, dynamic>>> queryDatPhongForGiaHan() async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT DatPhong.*, TaiKhoanNguoiDung.HoTen
+      FROM DatPhong
+      LEFT JOIN TaiKhoanNguoiDung ON DatPhong.IDNguoiDung = TaiKhoanNguoiDung.IDNguoiDung
+      WHERE DatPhong.TrangThai = 'confirmed'
+    ''');
+  }
+
+  Future<int> updateGiaHanDatPhong(
+    int id,
+    String newNgayTraPhong,
+    double newTongTien,
+    int newSoDem,
+  ) async {
+    final db = await database;
+    return await db.update(
+      tableDatPhong,
+      {
+        'NgayTraPhong': newNgayTraPhong,
+        'TongTien': newTongTien,
+        'SoDem': newSoDem,
+      },
+      where: 'IDDatPhong = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> deleteDatPhong(int id) async {
+    final db = await database;
+    return await db.delete(
+      tableDatPhong,
+      where: 'IDDatPhong = ?',
+      whereArgs: [id],
+    );
+  }
 }

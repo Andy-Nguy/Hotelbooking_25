@@ -1,0 +1,72 @@
+import 'dart:io';
+import 'package:flutter_hotelbooking_25/db/xylyadmin.dart' as instance;
+import 'package:flutter_hotelbooking_25/models/datphong.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+Future<List<Map<String, dynamic>>> getExpiredBookingsToday() async {
+  final db = await database;
+  final now = DateTime.now();
+  final startOfDay = DateTime(now.year, now.month, now.day);
+  final endOfDay = startOfDay.add(const Duration(days: 1)).subtract(const Duration(milliseconds: 1));
+  try {
+    final results = await db.rawQuery(
+      """
+      SELECT dp.IDDatPhong, dp.NgayNhanPhong, dp.NgayTraPhong, dp.SoDem,
+             dp.GiaMoiDemKhiDat, dp.TongTien, dp.TrangThai, p.IDPhong,
+             p.SoPhong, p.DangTrong, ks.IDKhachSan, ks.TenKhachSan,
+             ks.DiaChi, nd.IDNguoiDung, nd.HoTen AS TenNguoiDat,
+             nd.SoDienThoai AS SoDienThoaiNguoiDat, nd.Email AS EmailNguoiDat
+      FROM DatPhong dp
+      INNER JOIN Phong p ON dp.IDPhong = p.IDPhong
+      INNER JOIN KhachSan ks ON p.IDKhachSan = ks.IDKhachSan
+      INNER JOIN TaiKhoanNguoiDung nd ON dp.IDNguoiDung = nd.IDNguoiDung
+      WHERE dp.NgayTraPhong BETWEEN ? AND ? AND dp.TrangThai = ?
+      """,
+      [startOfDay.toIso8601String(), endOfDay.toIso8601String(), 'confirmed'],
+    );
+    print('SQLite: Lấy danh sách đặt phòng hết hạn hôm nay - Tìm thấy ${results.length} bản ghi');
+    for (var result in results) {
+      print('SQLite: Dữ liệu đặt phòng hết hạn - IDDatPhong: ${result['IDDatPhong']}, '
+            'Phòng: ${result['SoPhong']}, Khách sạn: ${result['TenKhachSan']}, '
+            'Trạng thái phòng: ${result['DangTrong'] == 1 ? 'Trống' : 'Đang thuê'}, '
+            'Người đặt: ${result['TenNguoiDat']} (${result['EmailNguoiDat']}), '
+            'NgayTraPhong: ${result['NgayTraPhong']}');
+    }
+    return results;
+  } catch (e) {
+    print('SQLite: Lỗi khi lấy danh sách đặt phòng hết hạn - Lỗi: $e');
+    return [];
+  }
+}
+
+Future<bool> updateRoomStatus(int idPhong, int dangTrong) async {
+  final db = await database;
+  try {
+    print('--- Bắt đầu updateRoomStatus ---');
+    print('IDPhong kiểm tra: $idPhong, DangTrong: $dangTrong');
+    print('Database đã mở thành công');
+    final roomCheck = await db.query(
+      tablePhong,
+      where: 'IDPhong = ?',
+      whereArgs: [idPhong],
+    );
+    if (roomCheck.isEmpty) {
+      print('SQLite: Lỗi - IDPhong $idPhong không tồn tại trong bảng Phong');
+      return false;
+    }
+    final result = await db.update(
+      tablePhong,
+      {'DangTrong': dangTrong},
+      where: 'IDPhong = ?',
+      whereArgs: [idPhong],
+    );
+    print('SQLite: Số hàng bị ảnh hưởng trong updateRoomStatus: $result');
+    return result > 0;
+  } catch (e) {
+    print('SQLite: Lỗi khi cập nhật trạng thái phòng: $e');
+    return false;
+  }
+}

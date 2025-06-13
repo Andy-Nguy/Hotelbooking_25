@@ -41,6 +41,23 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
       print('Lỗi khi tải chi tiết khách sạn ID ${widget.hotelId}: $e');
       _hotelFullDetails = null;
     }
+    try {
+      _hotelFullDetails = await dbHelper.getFullHotelDetails(widget.hotelId);
+      print("HotelDetailsScreen: 1Loaded hotel details: $_hotelFullDetails");
+      // Log chi tiết room_types
+      if (_hotelFullDetails?['room_types'] != null) {
+        for (var roomType in _hotelFullDetails!['room_types']) {
+          print(
+            "HotelDetailsScreen: RoomType: ${roomType['TenLoaiPhong']}, "
+            "UrlAnhChinh: ${roomType['UrlAnhChinh']}, "
+            "Gallery: ${roomType['gallery']}",
+          );
+        }
+      }
+    } catch (e) {
+      print('Lỗi khi tải chi tiết khách sạn ID ${widget.hotelId}: $e');
+      _hotelFullDetails = null;
+    }
 
     if (!mounted) return;
     setState(() {

@@ -87,6 +87,7 @@ class _ThongTinPhongPageState extends State<ThongTinPhongPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Thông tin phòng',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),

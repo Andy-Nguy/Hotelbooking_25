@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'xetduyet_moi_page.dart';
 import 'xetduyet_hethan_page.dart';
-import 'quanly_account_page.dart';
 import 'thongtin_phong_page.dart';
+import 'giahan_phong_page.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -19,7 +19,7 @@ class _AdminScreenState extends State<AdminScreen> {
     const XetDuyetMoiScreen(),
     const XetDuyetHetHanPage(),
     const ThongTinPhongPage(),
-    const QuanLyAccountPage(),
+    const GiaHanPhongPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -66,7 +66,10 @@ class _AdminScreenState extends State<AdminScreen> {
             icon: Icon(Icons.hotel),
             label: 'Thông tin phòng',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Phòng gia hạn',
+          ),
         ],
       ),
     );

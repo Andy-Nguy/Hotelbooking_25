@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hotelbooking_25/db/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class ServiceScreen extends StatefulWidget {
-  final bool hasBooking; // Tham số hasBooking từ MainScreen
+  final bool hasBooking;
   const ServiceScreen({super.key, required this.hasBooking});
 
   @override
@@ -13,15 +14,14 @@ class ServiceScreen extends StatefulWidget {
 class _ServiceScreenState extends State<ServiceScreen> {
   List<Map<String, dynamic>> _bookingList = [];
   bool _isLoading = true;
-  bool _isLoggedIn = false; // Thêm trạng thái đăng nhập
+  bool _isLoggedIn = false;
 
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus(); // Kiểm tra trạng thái đăng nhập trước
+    _checkLoginStatus();
   }
 
-  // Kiểm tra trạng thái đăng nhập
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final int? idNguoiDung = prefs.getInt('idNguoiDung');
@@ -30,7 +30,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
         _isLoggedIn = idNguoiDung != null;
       });
       if (_isLoggedIn && widget.hasBooking) {
-        _loadBookingData(); // Chỉ tải dữ liệu nếu đã đăng nhập và có đặt phòng
+        _loadBookingData();
       } else {
         setState(() {
           _isLoading = false;
@@ -40,9 +40,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
     }
   }
 
-  // Tải dữ liệu đặt phòng
   Future<void> _loadBookingData() async {
-    if (!_isLoggedIn || !widget.hasBooking) return; // Ngăn tải nếu không hợp lệ
+    if (!_isLoggedIn || !widget.hasBooking) return;
     setState(() {
       _isLoading = true;
     });
@@ -54,6 +53,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
           _bookingList = bookings;
           _isLoading = false;
         });
+        print('Danh sách đặt phòng: $bookings'); // Debug dữ liệu
       }
     } catch (e) {
       print('Lỗi khi lấy dữ liệu đặt phòng: $e');
@@ -82,11 +82,31 @@ class _ServiceScreenState extends State<ServiceScreen> {
     }
   }
 
+  String _generateQRData(Map<String, dynamic> booking) {
+    final qrData = '''
+Đặt phòng #${booking['IDDatPhong'] ?? 'N/A'}
+Khách sạn: ${booking['TenKhachSan'] ?? 'N/A'}
+Phòng: ${booking['SoPhong'] ?? 'N/A'}
+Nhận phòng: ${booking['NgayNhanPhong'] ?? 'N/A'}
+Trả phòng: ${booking['NgayTraPhong'] ?? 'N/A'}
+Người đặt: ${booking['TenNguoiDung'] ?? 'N/A'}
+Số đêm: ${booking['SoDem'] ?? 'N/A'}
+Tổng tiền: ${booking['TongTien'] ?? 'N/A'}
+Trạng thái: ${booking['TrangThai'] ?? 'N/A'}
+''';
+    print('QR Data: $qrData'); // Debug dữ liệu QR
+    return qrData;
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(
+      'Kích thước màn hình: ${MediaQuery.of(context).size}',
+    ); // Debug kích thước màn hình
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Danh sách đặt phòng',
           style: TextStyle(
@@ -225,7 +245,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    '${booking['TenKhachSan']}',
+                                    '${booking['TenKhachSan'] ?? 'N/A'}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20,
@@ -245,7 +265,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
-                                    '${booking['TrangThai']}',
+                                    '${booking['TrangThai'] ?? 'N/A'}',
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
@@ -278,7 +298,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      '${booking['DiaChi']}, ${booking['ThanhPho']}',
+                                      '${booking['DiaChi'] ?? 'N/A'}, ${booking['ThanhPho'] ?? 'N/A'}',
                                       style: const TextStyle(
                                         color: Color(0xFF3EAEF4),
                                         fontSize: 14,
@@ -312,7 +332,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      '${booking['TenLoaiPhong']} - Số phòng: ${booking['SoPhong']}',
+                                      '${booking['TenLoaiPhong'] ?? 'N/A'} - Số phòng: ${booking['SoPhong'] ?? 'N/A'}',
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         color: Color(0xFF91A8ED),
@@ -335,7 +355,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Người đặt: ${booking['TenNguoiDung']}',
+                                  'Người đặt: ${booking['TenNguoiDung'] ?? 'N/A'}',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Color(0xFF27A72F),
@@ -354,7 +374,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  '${booking['Email']}',
+                                  '${booking['Email'] ?? 'N/A'}',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Color(0xFF3EAEF4),
@@ -387,7 +407,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Nhận phòng: ${booking['NgayNhanPhong']}',
+                                        'Nhận phòng: ${booking['NgayNhanPhong'] ?? 'N/A'}',
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
@@ -406,7 +426,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Trả phòng: ${booking['NgayTraPhong']}',
+                                        'Trả phòng: ${booking['NgayTraPhong'] ?? 'N/A'}',
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
@@ -425,7 +445,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Số đêm: ${booking['SoDem']}',
+                                        'Số đêm: ${booking['SoDem'] ?? 'N/A'}',
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
@@ -465,7 +485,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                         ),
                                       ),
                                       Text(
-                                        '${booking['GiaMoiDemKhiDat']}',
+                                        '${booking['GiaMoiDemKhiDat'] ?? 'N/A'}',
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -488,7 +508,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                         ),
                                       ),
                                       Text(
-                                        '${booking['TongTien']}',
+                                        '${booking['TongTien'] ?? 'N/A'}',
                                         style: const TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -538,6 +558,63 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                   ],
                                 ),
                               ),
+
+                            // QR Code section
+                            Container(
+                              margin: const EdgeInsets.only(top: 16),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0xFF3EAEF4),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'Mã QR đặt phòng',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF3EAEF4),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  SizedBox(
+                                    width: 150.0,
+                                    height: 150.0,
+                                    child: QrImageView(
+                                      data: _generateQRData(booking),
+                                      version: QrVersions.auto,
+                                      gapless: false,
+                                      backgroundColor: Colors.white,
+                                      errorStateBuilder: (context, error) {
+                                        print(
+                                          'Lỗi tạo mã QR: $error',
+                                        ); // Debug lỗi
+                                        return const Text(
+                                          'Lỗi tạo mã QR',
+                                          style: TextStyle(color: Colors.red),
+                                          textAlign: TextAlign.center,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Quét mã để xem thông tin đặt phòng',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Color(0xFF6EC2F7),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),

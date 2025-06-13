@@ -16,7 +16,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   String? _selectedPaymentMethod;
   final List<String> _paymentMethods = [
     'Thẻ tín dụng',
-    'Momo',
+    'Thanh toán khi nhận phòng',
     'Chuyển khoản ngân hàng',
   ];
 
@@ -291,7 +291,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
         ),
       );
-    } else if (_selectedPaymentMethod == 'Momo' ||
+    } else if (_selectedPaymentMethod == 'Thanh toán khi nhận phòng' ||
         _selectedPaymentMethod == 'Chuyển khoản ngân hàng') {
       return Card(
         elevation: 2,
@@ -309,8 +309,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                _selectedPaymentMethod == 'Momo'
-                    ? 'Vui lòng quét mã QR hoặc sử dụng ứng dụng Momo để thanh toán.'
+                _selectedPaymentMethod == 'Thanh toán khi nhận phòng'
+                    ? 'Vui lòng quét mã QR hoặc sử dụng ứng dụng Thanh toán khi nhận phòng để thanh toán.'
                     : 'Vui lòng quét mã QR hoặc sử dụng ứng dụng ngân hàng để chuyển khoản.',
                 style: textTheme.bodyMedium,
               ),

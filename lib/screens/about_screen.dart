@@ -9,6 +9,7 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFE),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFF4A90E2),
         elevation: 0,
         title: const Text(
