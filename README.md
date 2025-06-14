@@ -83,9 +83,11 @@
 </p>
 
 **Thông Tin Đặt Phòng:**
+<p align="center">
   <img src="logo/thongtindatphong.jpg" alt="Thông Tin Đặt Phòng" width="30%"/>
   <img src="logo/mail.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
   <img src="logo/mail1.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
+</p>
 
 <!-- ... các phần khác của README ... -->
 ## Nguồn Tham Khảo
