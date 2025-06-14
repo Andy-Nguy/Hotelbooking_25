@@ -88,9 +88,32 @@
 **Thông Tin Đặt Phòng:**
   <img src="logo/thongtindatphong.jpg" alt="Thông Tin Đặt Phòng" width="30%"/>
   <img src="logo/mail.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
-  <img src="logo/quanlyphong2.jpglogo/mail1.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
+  <img src="logo/quanlyphong2.jpg" alt="logo/mail1.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
 
 <!-- ... các phần khác của README ... -->
+## Nguồn Tham Khảo
+
+Trong quá trình xây dựng ứng dụng này, tôi đã tham khảo và sử dụng các tài liệu, thư viện và nguồn cảm hứng sau:
+
+*   **Tài liệu chính thức của Flutter và Dart:**
+    *   [Flutter Documentation](https://flutter.dev/docs) - Nguồn tài liệu chính thức và toàn diện nhất về Flutter.
+    *   [Dart Language Tour](https://dart.dev/guides/language/language-tour) - Hướng dẫn chi tiết về ngôn ngữ Dart.
+    *   [Pub.dev](https://pub.dev/) - Trang tham khảo các thư viện trong flutter
+    *   [Tài liệu học tập](https://sites.google.com/view/success-key) - Trang tài liệu học tập chính trên lớp
+    *   
+
+*   **Thư viện Flutter (Plugins):**
+    *   [`sqflite`](https://pub.dev/packages/sqflite) - Plugin để tương tác với cơ sở dữ liệu SQLite trên Flutter.
+    *   [`path_provider`](https://pub.dev/packages/path_provider) - Plugin để tìm các đường dẫn thư mục thường dùng trên hệ thống file.
+    *   [`path`](https://pub.dev/packages/path) - Tiện ích để làm việc với đường dẫn file và thư mục.
+    *   [`intl`](https://pub.dev/packages/intl) - (Nếu bạn có sử dụng) Plugin cho việc quốc tế hóa và định dạng (ví dụ: ngày tháng, số).
+    *   *(Liệt kê các plugin quan trọng khác mà bạn đã sử dụng)*
+
+*   **Kiến thức về SQLite và Thiết kế CSDL:**
+    *   [SQLite Official Documentation](https://www.sqlite.org/docs.html) - Tài liệu chính thức về SQLite.
+    *   (Nếu có) Các bài viết, sách, hoặc khóa học về thiết kế cơ sở dữ liệu quan hệ.
+
+---
 
 ## Đóng Góp
 
