@@ -7,15 +7,12 @@
 *   [Tính Năng Chính](#tính-năng-chính)
 *   [Công Nghệ Sử Dụng](#công-nghệ-sử-dụng)
 *   [Ảnh Chụp Màn Hình](#ảnh-chụp-màn-hình)
-*   [Cấu Trúc Dự Án](#cấu-trúc-dự-án-(gợi-ý))
-*   [Hướng Dẫn Cài Đặt và Chạy](#hướng-dẫn-cài-đặt-và-chạy)
-*   [Kế Hoạch Phát Triển (Tương Lai)](#kế-hoạch-phát-triển-(tương-lai))
 *   [Đóng Góp](#đóng-góp)
 *   [Tác Giả](#tác-giả)
 
 ## Tính Năng Chính
 
-*   **Xác Thực Người Dùng (Cục bộ):**
+*   **Xác Thực Người Dùng:**
     *   **Đăng Ký:** Cho phép người dùng mới tạo tài khoản với thông tin cá nhân (Họ tên, Email, Mật khẩu, Số điện thoại). Mật khẩu được lưu trữ dưới dạng hash.
     *   **Đăng Nhập:** Cho phép người dùng đã có tài khoản đăng nhập vào ứng dụng.
 *   **Trang Chủ:**
@@ -28,12 +25,12 @@
     *   Danh sách các tiện nghi của khách sạn.
     *   Liệt kê các loại phòng có sẵn cùng thông tin chi tiết (ảnh, giá, số khách, tiện nghi loại phòng, số phòng còn trống).
     *   Nút "Đặt" cho mỗi loại phòng (dẫn đến quy trình đặt phòng).
-*   **(Đang phát triển/Kế hoạch) Quản Lý Đặt Phòng:**
+*   **Quản Lý Đặt Phòng:**
     *   Quy trình đặt phòng cho phép người dùng chọn phòng cụ thể (nếu còn trống) và xác nhận.
     *   Màn hình "Đặt Chỗ Của Tôi" để người dùng xem lịch sử các đặt phòng đã thực hiện (sắp tới, đã hoàn thành, đã hủy).
     *   Cho phép hủy đặt phòng (nếu điều kiện cho phép).
     *   Cho phép để lại đánh giá sau khi hoàn thành kỳ nghỉ.
-*   **(Demo) Quản Lý Phòng:**
+*   ** Quản Lý Phòng:**
     *   Một màn hình đơn giản hiển thị danh sách tất cả các phòng cụ thể trong CSDL.
     *   Hiển thị thông tin: Số phòng, Tên loại phòng, Tên khách sạn, Trạng thái (Trống/Đã đặt).
     *   (Có thể có) Chức năng demo đơn giản để thay đổi trạng thái `DangTrong` của một phòng (chủ yếu để kiểm tra logic và dữ liệu).
@@ -93,13 +90,13 @@
 <!-- ... các phần khác của README ... -->
 ## Nguồn Tham Khảo
 
-Trong quá trình xây dựng ứng dụng này, tôi đã tham khảo và sử dụng các tài liệu, thư viện và nguồn cảm hứng sau:
+Trong quá trình xây dựng ứng dụng này, nhóm em đã tham khảo và sử dụng các tài liệu, thư viện sau:
 
 *   **Tài liệu chính thức của Flutter và Dart:**
     *   [Flutter Documentation](https://flutter.dev/docs) - Nguồn tài liệu chính thức và toàn diện nhất về Flutter.
     *   [Dart Language Tour](https://dart.dev/guides/language/language-tour) - Hướng dẫn chi tiết về ngôn ngữ Dart.
     *   [Pub.dev](https://pub.dev/) - Trang tham khảo các thư viện trong flutter
-    *   [Tài liệu học tập](https://sites.google.com/view/success-key) - Trang tài liệu học tập chính trên lớp
+    *   [sites.google.com/view/success-key](https://sites.google.com/view/success-key) - Trang tài liệu học tập chính trên lớp
     *   
 
 *   **Thư viện Flutter (Plugins):**
