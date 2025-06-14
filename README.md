@@ -52,27 +52,42 @@
 
 ## Ảnh Chụp Màn Hình
 
-*(Hãy chụp ảnh màn hình các trang chính của ứng dụng và đặt vào đây sau khi bạn đã xây dựng chúng)*
+*(Các ảnh chụp màn hình được lưu trong thư mục `logo` ở gốc repository)*
 
-**Trang Đăng Ký:**
-![Trang Đăng Ký](logo/dangky.jpg)
-
-**Trang Đăng Nhập:**
-![Trang Đăng Nhập](logo/dangnhap.jpg)
+**Trang Đăng Nhập & Đăng Ký:**
+<p align="center">
+  <img src="logo/dangnhap.jpg" alt="Trang Đăng Nhập" width="45%"/> 
+  <img src="logo/dangky.jpg" alt="Trang Đăng Ký" width="45%"/>
+</p>
+<!-- width="45%" là ví dụ, bạn có thể điều chỉnh để ảnh vừa vặn. 
+     Để có khoảng cách giữa 2 ảnh, bạn có thể thêm một vài   hoặc dùng CSS nếu Markdown của bạn hỗ trợ (GitHub Markdown hạn chế CSS)
+     Ví dụ: <img ... />     <img ... />
+-->
 
 **Trang Chủ:**
-![Trang Chủ 1](logo/trangchu1.jpg)
-![Trang Chủ 2](logo/trangchu2.jpg)
+<p align="center">
+  <img src="logo/trangchu1.jpg" alt="Trang Chủ 1" width="45%"/>
+  <img src="logo/trangchu2.jpg" alt="Trang Chủ 2" width="45%"/>
+</p>
 
 **Trang Chi Tiết Khách Sạn:**
-![Chi Tiết Khách Sạn 1](logo/trangchitiet1.jpg)
-![Chi Tiết Khách Sạn 2](logo/trangchitiet2.jpg)
+<p align="center">
+  <img src="logo/trangchitiet1.jpg" alt="Chi Tiết Khách Sạn 1" width="30%"/>
+  <img src="logo/trangchitiet2.jpg" alt="Chi Tiết Khách Sạn 2" width="30%"/>
+  <!-- Thêm ảnh thứ 3 nếu có -->
+  <!-- <img src="logo/trangchitiet3.jpg" alt="Chi Tiết Khách Sạn 3" width="30%"/> -->
+</p>
 
 **Trang Quản Lý Phòng (Demo):**
-![Quản Lý Phòng](logo/quanlyphong.jpg)
-![Quản Lý Phòng - Chi tiết hơn](logo/quanlyphong1.jpg) <!-- Hoặc quanlyphong2.jpg -->
+<p align="center">
+  <img src="logo/quanlyphong.jpg" alt="Quản Lý Phòng" width="30%"/>
+  <img src="logo/quanlyphong1.jpg" alt="Quản Lý Phòng - Chi tiết hơn" width="30%"/>
+  <img src="logo/quanlyphong2.jpg" alt="Quản Lý Phòng - Thêm nữa" width="30%"/>
+</p>
 
 **Thông Tin Đặt Phòng (Ví dụ):**
-![Thông Tin Đặt Phòng](logo/thongtindatphong.jpg)
+![Thông Tin Đặt Phòng](logo/thongtindatphong.jpg) <!-- Ảnh này có thể để một mình nếu nó rộng -->
+
+<!-- ... các phần khác của README ... -->
 
 ## Cấu Trúc Dự Án (Gợi Ý)
