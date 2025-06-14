@@ -78,18 +78,26 @@
   <!-- <img src="logo/trangchitiet3.jpg" alt="Chi Tiết Khách Sạn 3" width="30%"/> -->
 </p>
 
-**Trang Quản Lý Phòng (Demo):**
+**Trang Quản Lý Phòng:**
 <p align="center">
   <img src="logo/quanlyphong.jpg" alt="Quản Lý Phòng" width="30%"/>
   <img src="logo/quanlyphong1.jpg" alt="Quản Lý Phòng - Chi tiết hơn" width="30%"/>
   <img src="logo/quanlyphong2.jpg" alt="Quản Lý Phòng - Thêm nữa" width="30%"/>
 </p>
 
-**Thông Tin Đặt Phòng (Ví dụ):**
+**Thông Tin Đặt Phòng:**
   <img src="logo/thongtindatphong.jpg" alt="Thông Tin Đặt Phòng" width="30%"/>
   <img src="logo/mail.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
   <img src="logo/quanlyphong2.jpglogo/mail1.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
 
 <!-- ... các phần khác của README ... -->
 
-## Cấu Trúc Dự Án (Gợi Ý)
+## Đóng Góp
+
+Đây là một dự án học tập. Mọi ý kiến đóng góp hoặc báo lỗi đều được chào đón. Vui lòng tạo một [Issue]([<!-- Link đến tab Issues của repo bạn -->](https://github.com/Andy-Nguy/Hotelbooking_25/issues)) để thảo luận.
+
+## Tác Giả
+
+*   **[Nguyễn Tô Duy Anh]** - *Nhóm trưởng* - [GitHub Profile của bạn]([<!-- Link đến GitHub profile của bạn -->](https://github.com/Andy-Nguy))
+*   **[Nguyễn Phương Anh]** - *SinhVien* - 
+*   **[Nguyễn Dương Lệ Chi]** - *SinhVien* - 
