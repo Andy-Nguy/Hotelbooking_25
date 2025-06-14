@@ -85,7 +85,7 @@
 **Thông Tin Đặt Phòng:**
   <img src="logo/thongtindatphong.jpg" alt="Thông Tin Đặt Phòng" width="30%"/>
   <img src="logo/mail.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
-  <img src="logo/quanlyphong2.jpg" alt="logo/mail1.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
+  <img src="logo/mail1.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
 
 <!-- ... các phần khác của README ... -->
 ## Nguồn Tham Khảo
