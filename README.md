@@ -30,7 +30,7 @@
     *   Màn hình "Đặt Chỗ Của Tôi" để người dùng xem lịch sử các đặt phòng đã thực hiện (sắp tới, đã hoàn thành, đã hủy).
     *   Cho phép hủy đặt phòng (nếu điều kiện cho phép).
     *   Cho phép để lại đánh giá sau khi hoàn thành kỳ nghỉ.
-*   ** Quản Lý Phòng:**
+*   **Quản Lý Phòng:**
     *   Một màn hình đơn giản hiển thị danh sách tất cả các phòng cụ thể trong CSDL.
     *   Hiển thị thông tin: Số phòng, Tên loại phòng, Tên khách sạn, Trạng thái (Trống/Đã đặt).
     *   (Có thể có) Chức năng demo đơn giản để thay đổi trạng thái `DangTrong` của một phòng (chủ yếu để kiểm tra logic và dữ liệu).
