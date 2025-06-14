@@ -54,20 +54,25 @@
 
 *(Hãy chụp ảnh màn hình các trang chính của ứng dụng và đặt vào đây sau khi bạn đã xây dựng chúng)*
 
-**Trang Đăng Nhập:**
-`![Trang Đăng Nhập](logo/dangky.jpg)` 
 **Trang Đăng Ký:**
-`![Trang Đăng Ký](screenshots/register_screen.png)` <!-- Thay bằng tên file ảnh của bạn -->
+![Trang Đăng Ký](logo/dangky.jpg)
 
-**Trang Chủ (Sau khi đăng nhập):**
-`![Trang Chủ](screenshots/home_screen.png)`
+**Trang Đăng Nhập:**
+![Trang Đăng Nhập](logo/dangnhap.jpg)
+
+**Trang Chủ:**
+![Trang Chủ 1](logo/trangchu1.jpg)
+![Trang Chủ 2](logo/trangchu2.jpg)
 
 **Trang Chi Tiết Khách Sạn:**
-`![Chi Tiết Khách Sạn](screenshots/hotel_details_screen.png)`
+![Chi Tiết Khách Sạn 1](logo/trangchitiet1.jpg)
+![Chi Tiết Khách Sạn 2](logo/trangchitiet2.jpg)
 
 **Trang Quản Lý Phòng (Demo):**
-`![Quản Lý Phòng](screenshots/manage_rooms_screen.png)` <!-- Thay bằng tên file ảnh của bạn -->
+![Quản Lý Phòng](logo/quanlyphong.jpg)
+![Quản Lý Phòng - Chi tiết hơn](logo/quanlyphong1.jpg) <!-- Hoặc quanlyphong2.jpg -->
 
-**(Thêm các ảnh khác nếu cần, ví dụ: Trang Đặt Chỗ Của Tôi, Trang Đặt Phòng, v.v.)**
+**Thông Tin Đặt Phòng (Ví dụ):**
+![Thông Tin Đặt Phòng](logo/thongtindatphong.jpg)
 
 ## Cấu Trúc Dự Án (Gợi Ý)
