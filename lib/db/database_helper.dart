@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:flutter_hotelbooking_25/db/xylyadmin.dart'
+    as instance
+    show database;
 import 'package:flutter_hotelbooking_25/models/datphong.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -2007,12 +2010,57 @@ class DatabaseHelper {
   }
 
   Future<List<Map<String, dynamic>>> getBookingsByUserId(int userId) async {
-    final db = await database;
-    return await db.query(
-      'DatPhong',
-      where: 'IDNguoiDung = ?',
-      whereArgs: [userId],
-    );
+    print('Bắt đầu getBookingsByUserId với userId: $userId');
+    final db = await instance.database;
+    try {
+      final result = await db.rawQuery(
+        '''
+      SELECT 
+        dp.IDDatPhong,
+        dp.NgayNhanPhong,
+        dp.NgayTraPhong,
+        dp.SoDem,
+        dp.GiaMoiDemKhiDat,
+        dp.TongTien,
+        dp.NgayDatPhong,
+        dp.TrangThai,
+        dp.YeuCauDacBiet,
+        dp.MaGiaoDich,
+        
+        nguoidung.HoTen AS TenNguoiDung,
+        nguoidung.Email,
+        nguoidung.SoDienThoai AS SoDienThoaiNguoiDung,
+        
+        phong.IDPhong,
+        phong.SoPhong,
+        
+        loaiphong.IDLoaiPhong,
+        loaiphong.TenLoaiPhong,
+        loaiphong.MoTa AS MoTaLoaiPhong,
+        
+        khachsan.IDKhachSan,
+        khachsan.TenKhachSan,
+        khachsan.DiaChi,
+        khachsan.ThanhPho,
+        khachsan.SoDienThoaiKhachSan
+        
+      FROM DatPhong dp
+      INNER JOIN TaiKhoanNguoiDung nguoidung ON dp.IDNguoiDung = nguoidung.IDNguoiDung
+      INNER JOIN Phong phong ON dp.IDPhong = phong.IDPhong
+      INNER JOIN LoaiPhong loaiphong ON phong.IDLoaiPhong = loaiphong.IDLoaiPhong
+      INNER JOIN KhachSan khachsan ON phong.IDKhachSan = khachsan.IDKhachSan
+      WHERE dp.IDNguoiDung = ?
+      ORDER BY dp.NgayDatPhong DESC
+    ''',
+        [userId],
+      );
+      print('Kết quả truy vấn getBookingsByUserId: $result');
+      print('Số lượng booking tìm thấy: ${result.length}');
+      return result;
+    } catch (e) {
+      print('Lỗi trong getBookingsByUserId: $e');
+      return [];
+    }
   }
 
   //
@@ -2326,5 +2374,48 @@ class DatabaseHelper {
       where: 'IDDatPhong = ?',
       whereArgs: [id],
     );
+  }
+}
+
+Future<List<Map<String, dynamic>>> getBookingsForReminder() async {
+  print('Bắt đầu kiểm tra booking để gửi nhắc nhở');
+  final db = await instance.database;
+  try {
+    // Lấy ngày mai dưới định dạng phù hợp với NgayNhanPhong (giả sử định dạng là 'YYYY-MM-DD')
+    final tomorrow = DateTime.now().add(Duration(days: 1));
+    final tomorrowFormatted = tomorrow.toIso8601String().split('T')[0];
+    print('Ngày mai: $tomorrowFormatted');
+
+    final result = await db.rawQuery(
+      '''
+      SELECT 
+        dp.IDDatPhong,
+        dp.NgayNhanPhong,
+        dp.NgayTraPhong,
+        dp.SoDem,
+        dp.TongTien,
+        dp.TrangThai,
+        nguoidung.HoTen AS TenNguoiDung,
+        nguoidung.Email,
+        khachsan.TenKhachSan,
+        khachsan.DiaChi,
+        khachsan.ThanhPho,
+        phong.SoPhong,
+        loaiphong.TenLoaiPhong
+      FROM DatPhong dp
+      INNER JOIN TaiKhoanNguoiDung nguoidung ON dp.IDNguoiDung = nguoidung.IDNguoiDung
+      INNER JOIN Phong phong ON dp.IDPhong = phong.IDPhong
+      INNER JOIN LoaiPhong loaiphong ON phong.IDLoaiPhong = loaiphong.IDLoaiPhong
+      INNER JOIN KhachSan khachsan ON phong.IDKhachSan = khachsan.IDKhachSan
+      WHERE dp.NgayNhanPhong = ? AND dp.TrangThai = 'Đã xác nhận'
+    ''',
+      [tomorrowFormatted],
+    );
+    print('Booking cần nhắc nhở: $result');
+    print('Số lượng booking: ${result.length}');
+    return result;
+  } catch (e) {
+    print('Lỗi khi lấy booking nhắc nhở: $e');
+    return [];
   }
 }

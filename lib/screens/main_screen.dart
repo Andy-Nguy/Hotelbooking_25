@@ -4,7 +4,7 @@ import 'package:flutter_hotelbooking_25/screens/about_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/login_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/service_screen.dart';
 import 'package:flutter_hotelbooking_25/screens/user/UserProfile_screen.dart';
-import 'package:flutter_hotelbooking_25/db/database_helper.dart'; // Giả sử bạn có file này
+import 'package:flutter_hotelbooking_25/db/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,34 +14,51 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0; // Theo dõi tab hiện tại
-  bool _isLoggedIn = false; // Mặc định là false, sẽ được cập nhật
-  bool _hasBooking = false; // Trạng thái đặt phòng
-  bool _isLoading = true; // Trạng thái loading
+class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
+  int _selectedIndex = 0;
+  bool _isLoggedIn = false;
+  bool _hasBooking = false;
+  bool _isLoading = true;
+
+  AnimationController? _animationController;
+  Animation<double>? _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _loadLoginStatus(); // Kiểm tra trạng thái đăng nhập khi khởi động
-    _checkBookingStatus(); // Kiểm tra trạng thái đặt phòng
+    _initAnimation();
+    _loadLoginStatus();
+    _checkBookingStatus();
   }
 
-  // Hàm kiểm tra trạng thái đăng nhập từ SharedPreferences
+  void _initAnimation() {
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController!, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController?.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
-    final int? idNguoiDung = prefs.getInt(
-      'idNguoiDung',
-    ); // Khóa lưu ID người dùng
+    final int? idNguoiDung = prefs.getInt('idNguoiDung');
     if (mounted) {
       setState(() {
-        _isLoggedIn = idNguoiDung != null; // Nếu có ID, coi như đã đăng nhập
-        _isLoading = false; // Kết thúc loading sau khi kiểm tra
+        _isLoggedIn = idNguoiDung != null;
+        _isLoading = false;
       });
+      _animationController?.forward();
     }
   }
 
-  // Hàm kiểm tra trạng thái đặt phòng
   Future<void> _checkBookingStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final int? idNguoiDung = prefs.getInt('idNguoiDung');
@@ -60,40 +77,33 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  // Cập nhật trạng thái đăng nhập sau khi đăng nhập/thoát
   void _updateLoginStatus(bool isLoggedIn) {
     setState(() {
       _isLoggedIn = isLoggedIn;
     });
     _saveLoginStatus();
-    if (isLoggedIn)
-      _checkBookingStatus(); // Kiểm tra lại đặt phòng khi đăng nhập
+    if (isLoggedIn) _checkBookingStatus();
   }
 
-  // Lưu trạng thái đăng nhập vào SharedPreferences
   Future<void> _saveLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     if (_isLoggedIn) {
-      // Thay 1 bằng ID thực tế từ LoginScreen
-      final int? userId = await _getUserIdFromLogin(); // Giả sử hàm này
+      final int? userId = await _getUserIdFromLogin();
       if (userId != null) {
         prefs.setInt('idNguoiDung', userId);
       }
     } else {
-      prefs.remove('idNguoiDung'); // Xóa khi đăng xuất
+      prefs.remove('idNguoiDung');
       setState(() {
-        _hasBooking = false; // Đặt lại trạng thái đặt phòng khi đăng xuất
+        _hasBooking = false;
       });
     }
   }
 
-  // Hàm giả lập lấy ID người dùng từ LoginScreen (thay bằng logic thực tế)
   Future<int?> _getUserIdFromLogin() async {
-    // Thay bằng logic lấy ID từ LoginScreen (ví dụ: từ API hoặc database)
-    return 1; // Giả lập
+    return 1;
   }
 
-  // Danh sách các màn hình, truyền trạng thái xuống con
   List<Widget> get _screens => <Widget>[
     const HomeScreen(),
     AboutScreen(hasBooking: _hasBooking),
@@ -105,13 +115,12 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    // Điều hướng thủ công nếu nhấn tab Profile/Login và chưa đăng nhập
     if (index == 3 && !_isLoggedIn) {
       Navigator.pushNamed(context, '/login').then((result) {
         if (result != null && result is Map && result['success'] == true) {
           _updateLoginStatus(true);
           setState(() {
-            _selectedIndex = 3; // Đảm bảo quay lại tab 3 sau đăng nhập
+            _selectedIndex = 3;
           });
         }
       });
@@ -123,19 +132,180 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body:
           _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _screens[_selectedIndex], // Hiển thị màn hình tương ứng với tab
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'About'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Service'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black87,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
+              ? Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.blue.shade50, Colors.white],
+                  ),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.1),
+                              spreadRadius: 5,
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.blue.shade600,
+                          ),
+                          strokeWidth: 3,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Đang tải...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+              : _fadeAnimation != null
+              ? FadeTransition(
+                opacity: _fadeAnimation!,
+                child: _screens[_selectedIndex],
+              )
+              : _screens[_selectedIndex],
+      bottomNavigationBar:
+          _isLoading
+              ? null
+              : Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      spreadRadius: 0,
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildNavItem(
+                          icon: Icons.home_rounded,
+                          label: 'Trang chủ',
+                          index: 0,
+                        ),
+                        _buildNavItem(
+                          icon: Icons.info_rounded,
+                          label: 'Giới thiệu',
+                          index: 1,
+                        ),
+                        _buildNavItem(
+                          icon: Icons.room_service_rounded,
+                          label: 'Dịch vụ',
+                          index: 2,
+                        ),
+                        _buildNavItem(
+                          icon:
+                              _isLoggedIn
+                                  ? Icons.person_rounded
+                                  : Icons.login_rounded,
+                          label: _isLoggedIn ? 'Hồ sơ' : 'Đăng nhập',
+                          index: 3,
+                          showBadge: _hasBooking,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    required int index,
+    bool showBadge = false,
+  }) {
+    final isSelected = _selectedIndex == index;
+
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue.shade50 : Colors.transparent,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color:
+                        isSelected ? Colors.blue.shade600 : Colors.transparent,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: isSelected ? Colors.white : Colors.grey.shade600,
+                    size: 24,
+                  ),
+                ),
+                if (showBadge)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade500,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 200),
+              style: TextStyle(
+                fontSize: isSelected ? 12 : 11,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected ? Colors.blue.shade600 : Colors.grey.shade600,
+                letterSpacing: 0.3,
+              ),
+              child: Text(label),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -43,7 +43,7 @@ dependencies:
   workmanager: ^0.6.0
   qr_flutter: ^4.1.0
   mailer: ^6.4.1
-  stripe_payment: ^1.1.4
+  # stripe_payment: ^1.1.4
 
   flutter_map: ^8.1.1  # Kiểm tra phiên bản mới nhất trên https://pub.dev/packages/flutter_map
   latlong2: ^0.9.1

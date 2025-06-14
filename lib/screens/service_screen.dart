@@ -41,22 +41,52 @@ class _ServiceScreenState extends State<ServiceScreen> {
   }
 
   Future<void> _loadBookingData() async {
-    if (!_isLoggedIn || !widget.hasBooking) return;
+    if (!_isLoggedIn || !widget.hasBooking) {
+      print(
+        'Không tải dữ liệu vì không đăng nhập hoặc không có booking. isLoggedIn: $_isLoggedIn, hasBooking: ${widget.hasBooking}',
+      );
+      return;
+    }
+
+    print('Bắt đầu tải dữ liệu booking');
     setState(() {
       _isLoading = true;
     });
+
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final int? idNguoiDung = prefs.getInt('idNguoiDung');
+      print('ID người dùng trong _loadBookingData: $idNguoiDung');
+
+      if (idNguoiDung == null) {
+        print('Không tìm thấy ID người dùng trong SharedPreferences');
+        setState(() {
+          _isLoading = false;
+          _bookingList = [];
+        });
+        return;
+      }
+
       final dbHelper = DatabaseHelper.instance;
-      final bookings = await dbHelper.getAllBookingsDetailed();
+      print('Gọi getBookingsByUserId với idNguoiDung: $idNguoiDung');
+      final bookings = await dbHelper.getBookingsByUserId(idNguoiDung);
+
       if (mounted) {
+        print('Danh sách booking nhận được: $bookings');
+        print('Số lượng booking: ${bookings.length}');
         setState(() {
           _bookingList = bookings;
           _isLoading = false;
         });
-        print('Danh sách đặt phòng: $bookings'); // Debug dữ liệu
+        if (bookings.isEmpty) {
+          print(
+            'Danh sách booking rỗng, hiển thị thông báo "Chưa có đặt phòng nào"',
+          );
+        }
       }
-    } catch (e) {
-      print('Lỗi khi lấy dữ liệu đặt phòng: $e');
+    } catch (e, stackTrace) {
+      print('Lỗi khi tải dữ liệu booking: $e');
+      print('Stack trace: $stackTrace');
       if (mounted) {
         setState(() {
           _isLoading = false;
