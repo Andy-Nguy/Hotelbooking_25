@@ -82,7 +82,7 @@
   <img src="logo/quanlyphong2.jpg" alt="Quản Lý Phòng - Thêm nữa" width="30%"/>
 </p>
 
-**Thông Tin Đặt Phòng:**
+**Thông Tin Đặt Phòng Và Mail Xác Nhận Đặt Phòng:**
 <p align="center">
   <img src="logo/thongtindatphong.jpg" alt="Thông Tin Đặt Phòng" width="30%"/>
   <img src="logo/mail.jpg" alt="Mail Xác Nhận Đặt Phòng" width="30%"/>
