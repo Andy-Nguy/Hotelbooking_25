@@ -55,7 +55,7 @@
 *(Hãy chụp ảnh màn hình các trang chính của ứng dụng và đặt vào đây sau khi bạn đã xây dựng chúng)*
 
 **Trang Đăng Nhập:**
-`![Trang Đăng Nhập](screenshots/login_screen.png)` <!-- Thay bằng tên file ảnh của bạn -->
+`![Trang Đăng Nhập](assests/logo/dangky.png)` <!-- Thay bằng tên file ảnh của bạn -->
 
 **Trang Đăng Ký:**
 `![Trang Đăng Ký](screenshots/register_screen.png)` <!-- Thay bằng tên file ảnh của bạn -->
