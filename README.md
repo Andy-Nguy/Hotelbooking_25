@@ -94,10 +94,10 @@
 
 ## Đóng Góp
 
-Đây là một dự án học tập. Mọi ý kiến đóng góp hoặc báo lỗi đều được chào đón. Vui lòng tạo một [Issue]([<!-- Link đến tab Issues của repo bạn -->](https://github.com/Andy-Nguy/Hotelbooking_25/issues)) để thảo luận.
+Đây là một dự án học tập. Mọi ý kiến đóng góp hoặc báo lỗi đều được chào đón. Vui lòng tạo một(https://github.com/Andy-Nguy/Hotelbooking_25/issues)) để thảo luận.
 
 ## Tác Giả
 
-*   **[Nguyễn Tô Duy Anh]** - *Nhóm trưởng* - [GitHub Profile của bạn]([<!-- Link đến GitHub profile của bạn -->](https://github.com/Andy-Nguy))
+*   **[Nguyễn Tô Duy Anh]** - *Nhóm trưởng* -(https://github.com/Andy-Nguy))
 *   **[Nguyễn Phương Anh]** - *SinhVien* - 
 *   **[Nguyễn Dương Lệ Chi]** - *SinhVien* - 
